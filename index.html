@@ -3,2108 +3,784 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Столп воды · Гию Томиока</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💧</text></svg>">
+    <title>Дыхание Воды · Наследие</title>
+    <!-- Иконка -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' fill='%234aa0d0'>💧</text></svg>">
+    <!-- Шрифты и иконки -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Библиотека для плавных анимаций (AOS) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
-        :root {
-            --deep-blue: #0a2942;
-            --ocean: #1e4a6f;
-            --wave: #2e6b8f;
-            --light-wave: #4a90b0;
-            --foam: #b3e0f5;
-            --white: #ffffff;
-            --light: #e0f2fe;
-            --dark: #021c2c;
-            --accent: #1e6f8f;
-            --water-glow: rgba(100, 200, 255, 0.3);
-        }
-        
+        /* ===== СБРОС И ПЕРЕМЕННЫЕ ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* Кастомный скроллбар (водная тема) */
-        ::-webkit-scrollbar {
-            width: 8px;
+        :root {
+            --deep-water: #021c2c;
+            --abyss: #0a2a3a;
+            --ocean: #1a4a6a;
+            --wave: #2e7a9e;
+            --light-wave: #4aa0d0;
+            --foam: #b0e0ff;
+            --glow: rgba(74, 160, 208, 0.6);
+            --white: #ffffff;
+            --light: #e2f0fa;
+            --dark-overlay: rgba(2, 28, 44, 0.85);
+            --card-bg: rgba(10, 42, 58, 0.6);
+            --border-glow: rgba(74, 160, 208, 0.3);
         }
 
-        ::-webkit-scrollbar-track {
-            background: rgba(10, 40, 60, 0.8);
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--deep-water);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, #1e6f8f, #4a90b0);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(45deg, #4a90b0, #7fc7e0);
-        }
-
-        /* WebGL Canvas (синие частицы) */
-        #webgl-canvas {
+        /* Фоновый видео-слой (волны) */
+        .video-background {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -2;
-            display: block;
+            object-fit: cover;
+            opacity: 0.25;
+            pointer-events: none;
         }
 
-        /* Новый фон – океан */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: url('https://images.unsplash.com/photo-1505118380757-91f5f5632de0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
-            background-size: cover;
-            color: var(--white);
-            min-height: 100vh;
-            line-height: 1.6;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Затемнение для читаемости */
-        body::before {
+        /* Затемнение поверх видео */
+        body::after {
             content: '';
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(2, 28, 44, 0.75);
+            background: radial-gradient(circle at 20% 30%, transparent 0%, var(--deep-water) 90%);
             z-index: -1;
+            pointer-events: none;
         }
 
+        /* Кастомный скролл */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--abyss);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, var(--wave), var(--light-wave));
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, var(--light-wave), #7fcff0);
+        }
+
+        /* Контейнер */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0 30px;
             position: relative;
-            z-index: 1;
+            z-index: 5;
         }
 
-        /* Боковая панель – цвета воды */
-        .dark-sidebar {
+        /* ===== ПРЕЛОУДЕР ===== */
+        .preloader {
             position: fixed;
+            top: 0;
             left: 0;
-            top: 0;
-            width: 80px;
-            height: 100vh;
-            background: rgba(2, 28, 44, 0.95);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
-            z-index: 1000;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 0;
-        }
-
-        .dark-sidebar:hover {
-            width: 250px;
-            box-shadow: 10px 0 30px rgba(0, 150, 255, 0.2);
-        }
-
-        .sidebar-logo {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #0a2942, #2e6b8f, #7fc7e0);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8em;
-            margin-bottom: 40px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            color: var(--white);
-        }
-
-        .sidebar-logo::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
-            transform: rotate(30deg);
-            animation: shine 6s infinite linear;
-        }
-
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            padding: 0 15px;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            border-radius: 12px;
-            color: var(--light);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            white-space: nowrap;
-            border: 1px solid transparent;
-            cursor: pointer;
-        }
-
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .nav-item:hover::before {
-            left: 100%;
-        }
-
-        .nav-item:hover {
-            background: rgba(100, 200, 255, 0.15);
-            border-color: rgba(100, 200, 255, 0.3);
-            transform: translateX(5px);
-        }
-
-        .nav-item.active {
-            background: rgba(100, 200, 255, 0.2);
-            border-color: rgba(100, 200, 255, 0.5);
-            box-shadow: 0 5px 15px rgba(0, 150, 255, 0.3);
-        }
-
-        .nav-icon {
-            width: 24px;
-            height: 24px;
+            background: var(--deep-water);
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 1.2em;
-            transition: all 0.3s ease;
-            color: var(--light-wave);
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease, visibility 1s ease;
         }
-
-        .nav-text {
+        .preloader.hidden {
             opacity: 0;
-            transform: translateX(-10px);
-            transition: all 0.3s ease;
-            font-weight: 500;
-            color: var(--light);
+            visibility: hidden;
         }
-
-        .dark-sidebar:hover .nav-text {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .main-content {
-            margin-left: 80px;
-            transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            min-height: 100vh;
-        }
-
-        .dark-sidebar:hover ~ .main-content {
-            margin-left: 250px;
-        }
-
-        .section {
-            display: none;
-            animation: fadeInUp 0.8s ease-out;
-        }
-        
-        .section.active {
-            display: block;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(30deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(30deg); }
-        }
-
-        .hero {
-            text-align: center;
-            padding: 100px 0 80px;
-            position: relative;
-        }
-        
-        .hero h1 {
-            font-size: 4em;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #b3e0f5, #ffffff, #b3e0f5);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 30px rgba(0, 150, 255, 0.3);
-            position: relative;
-            display: inline-block;
-        }
-        
-        .hero h1::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #7fc7e0, transparent);
-            border-radius: 50%;
-        }
-        
-        .hero p {
-            font-size: 1.3em;
-            color: var(--light);
-            max-width: 700px;
-            margin: 0 auto 40px;
-            position: relative;
-            padding: 20px;
-            border-radius: 10px;
-            background: rgba(100, 200, 255, 0.1);
-            border: 1px solid rgba(100, 200, 255, 0.2);
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin: 80px 0;
-        }
-        
-        .feature-card {
-            background: rgba(0, 40, 70, 0.6);
-            border-radius: 20px;
-            padding: 40px 30px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(100, 200, 255, 0.2);
-            transition: all 0.4s ease;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(100, 200, 255, 0.1), transparent);
-            transition: left 0.7s ease;
-        }
-        
-        .feature-card:hover::before {
-            left: 100%;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-15px);
-            background: rgba(0, 60, 90, 0.7);
-            border-color: rgba(100, 200, 255, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 100, 200, 0.2);
-        }
-        
-        .feature-icon {
+        .water-drop {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #0a2942, #2e6b8f, #7fc7e0);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 25px;
-            font-size: 2em;
-            animation: pulse 3s infinite;
-            border: 2px solid #b3e0f5;
-            position: relative;
-            overflow: hidden;
-            color: white;
+            background: var(--light-wave);
+            border-radius: 50% 50% 20% 50%;
+            transform: rotate(45deg);
+            animation: pulse-drop 1.5s infinite alternate;
+            box-shadow: 0 0 50px var(--glow);
         }
-        
-        .feature-icon::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
-            transform: rotate(30deg);
-            animation: shine 5s infinite linear;
+        @keyframes pulse-drop {
+            0% { transform: rotate(45deg) scale(1); opacity: 1; }
+            100% { transform: rotate(45deg) scale(1.3); opacity: 0.7; }
         }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(100, 200, 255, 0.3); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(100, 200, 255, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(100, 200, 255, 0); }
-        }
-        
-        .feature-card h3 {
-            font-size: 1.8em;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #b3e0f5, #ffffff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .feature-card p {
-            color: var(--light);
-            margin-bottom: 25px;
-            line-height: 1.7;
-        }
-        
-        .feature-button {
-            display: inline-block;
-            padding: 12px 30px;
-            background: rgba(100, 200, 255, 0.2);
-            color: var(--white);
-            text-decoration: none;
-            border-radius: 25px;
-            border: 1px solid rgba(100, 200, 255, 0.3);
-            font-weight: 600;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        
-        .feature-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-        
-        .feature-button:hover::before {
-            left: 100%;
-        }
-        
-        .feature-button:hover {
-            background: rgba(100, 200, 255, 0.3);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 150, 255, 0.3);
-        }
-        
-        .section-title {
-            font-size: 2.5em;
-            margin-bottom: 50px;
-            text-align: center;
-            background: linear-gradient(135deg, #b3e0f5, #ffffff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            position: relative;
-            display: inline-block;
+
+        /* ===== НАВИГАЦИЯ (ПОЛНОЭКРАННАЯ С ЭФФЕКТОМ СТЕКЛА) ===== */
+        .navbar {
+            position: fixed;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -15px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #7fc7e0, transparent);
-            border-radius: 50%;
-        }
-
-        .members-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin: 40px 0;
-        }
-        
-        .member-card {
-            background: rgba(0, 40, 70, 0.6);
-            border-radius: 20px;
-            padding: 30px 25px;
+            width: 90%;
+            max-width: 1300px;
+            background: rgba(2, 28, 44, 0.7);
             backdrop-filter: blur(15px);
-            border: 1px solid rgba(100, 200, 255, 0.2);
-            transition: all 0.4s ease;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .member-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(100, 200, 255, 0.1), transparent);
-            transition: left 0.7s ease;
-        }
-        
-        .member-card:hover::before {
-            left: 100%;
-        }
-        
-        .member-card:hover {
-            transform: translateY(-10px);
-            background: rgba(0, 60, 90, 0.7);
-            border-color: rgba(100, 200, 255, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 100, 200, 0.2);
-        }
-        
-        .member-avatar {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #0a2942, #2e6b8f, #7fc7e0);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 2em;
-            border: 2px solid #b3e0f5;
-            animation: pulse 3s infinite;
-            position: relative;
-            overflow: hidden;
-            color: white;
-        }
-        
-        .member-avatar::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
-            transform: rotate(30deg);
-            animation: shine 5s infinite linear;
-        }
-        
-        .member-rank {
-            color: #7fc7e0;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 1.1em;
-        }
-        
-        .member-name {
-            font-size: 1.4em;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #b3e0f5, #ffffff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .member-role {
-            color: var(--light);
-            font-size: 0.95em;
-            line-height: 1.4;
-        }
-        
-        .member-card.vacant {
-            background: rgba(0, 40, 70, 0.4);
-            border: 2px dashed rgba(100, 200, 255, 0.3);
-        }
-        
-        .member-card.vacant .member-avatar {
-            background: linear-gradient(135deg, #1a3a50, #2a5068);
-            border-color: rgba(100, 200, 255, 0.2);
-        }
-        
-        .member-card.vacant .member-name {
-            color: #7fc7e0;
-            -webkit-text-fill-color: #7fc7e0;
-            background: none;
-        }
-
-        /* Водная тема для карточек */
-        .member-card.water-card {
-            background: rgba(30, 100, 140, 0.3);
-            border: 1px solid rgba(100, 200, 255, 0.4);
-        }
-        
-        .member-card.water-card:hover {
-            background: rgba(30, 120, 160, 0.4);
-            border-color: rgba(100, 200, 255, 0.7);
-        }
-        
-        .member-card.water-card .member-avatar {
-            background: linear-gradient(135deg, #0a4a70, #1e6f9f, #4aa0d0);
-            border-color: #b3e0f5;
-        }
-        
-        .member-card.water-card .member-rank {
-            color: #b3e0f5;
-        }
-        
-        .member-card.water-card .member-name {
-            background: linear-gradient(135deg, #ffffff, #b3e0f5);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .rules-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin: 60px 0;
-        }
-        
-        .rule-card {
-            background: rgba(0, 40, 70, 0.6);
-            border-radius: 20px;
-            padding: 35px 30px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(100, 200, 255, 0.2);
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .rule-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(100, 200, 255, 0.1), transparent);
-            transition: left 0.7s ease;
-        }
-        
-        .rule-card:hover::before {
-            left: 100%;
-        }
-        
-        .rule-card:hover {
-            transform: translateY(-10px);
-            background: rgba(0, 60, 90, 0.7);
-            border-color: rgba(100, 200, 255, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 100, 200, 0.2);
-        }
-        
-        .rule-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #0a2942, #2e6b8f, #7fc7e0);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-            animation: pulse 3s infinite;
-            border: 2px solid #b3e0f5;
-            position: relative;
-            overflow: hidden;
-            color: white;
-        }
-        
-        .rule-icon::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
-            transform: rotate(30deg);
-            animation: shine 5s infinite linear;
-        }
-        
-        .rule-title {
-            font-size: 1.6em;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #b3e0f5, #ffffff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .rule-list {
-            list-style: none;
-            color: var(--light);
-        }
-        
-        .rule-list li {
-            margin-bottom: 12px;
-            padding-left: 25px;
-            position: relative;
-            line-height: 1.5;
-        }
-        
-        .rule-list li:before {
-            content: '•';
-            position: absolute;
-            left: 10px;
-            color: #7fc7e0;
-            font-weight: bold;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 80px;
-            padding-top: 40px;
-            border-top: 1px solid rgba(100, 200, 255, 0.2);
-            color: var(--light);
-            position: relative;
-        }
-        
-        .footer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #7fc7e0, transparent);
-        }
-
-        .server-info {
-            background: rgba(30, 100, 140, 0.5);
-            padding: 12px 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(100, 200, 255, 0.4);
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-family: monospace;
-            font-size: 1.1em;
-            margin-top: 20px;
-            color: var(--light);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .server-info:hover {
-            background: rgba(30, 120, 160, 0.6);
-            border-color: rgba(100, 200, 255, 0.6);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 150, 255, 0.2);
-        }
-
-        .server-info.copied {
-            background: rgba(0, 100, 200, 0.3);
-            border-color: rgba(0, 200, 255, 0.6);
-        }
-
-        .server-info.copied::after {
-            content: '✓ Скопировано!';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 150, 200, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            animation: fadeOut 2s ease-in-out forwards;
-        }
-
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            70% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        .team-category {
-            margin-bottom: 60px;
-        }
-        
-        .category-title {
-            font-size: 2.2em;
-            margin-bottom: 40px;
-            text-align: center;
-            background: linear-gradient(135deg, #b3e0f5, #ffffff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            position: relative;
-        }
-        
-        .category-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #7fc7e0, transparent);
-        }
-
-        .page-header {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .page-header h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #b3e0f5, #ffffff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            position: relative;
-            display: inline-block;
-        }
-
-        .page-header h1::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #7fc7e0, transparent);
-            border-radius: 50%;
-        }
-
-        /* Ранги (дыхание воды) */
-        .ranks-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin: 60px 0;
-        }
-        
-        .rank-card {
-            background: rgba(0, 40, 70, 0.6);
-            border-radius: 20px;
-            padding: 35px 30px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(100, 200, 255, 0.2);
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .rank-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(100, 200, 255, 0.1), transparent);
-            transition: left 0.7s ease;
-        }
-        
-        .rank-card:hover::before {
-            left: 100%;
-        }
-        
-        .rank-card:hover {
-            transform: translateY(-10px);
-            background: rgba(0, 60, 90, 0.7);
-            border-color: rgba(100, 200, 255, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 100, 200, 0.2);
-        }
-        
-        .rank-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #0a2942, #2e6b8f, #7fc7e0);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-            animation: pulse 3s infinite;
-            border: 2px solid #b3e0f5;
-            position: relative;
-            overflow: hidden;
-            color: white;
-        }
-        
-        .rank-icon::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
-            transform: rotate(30deg);
-            animation: shine 5s infinite linear;
-        }
-        
-        .rank-title {
-            font-size: 1.6em;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #b3e0f5, #ffffff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .rank-points {
-            font-size: 2.2em;
-            font-weight: 700;
-            color: var(--white);
-            margin-bottom: 10px;
-            text-shadow: 0 0 15px rgba(100, 200, 255, 0.3);
-        }
-        
-        .rank-cooldown {
-            color: #7fc7e0;
-            font-weight: 600;
-            margin-bottom: 15px;
-            border-left: 3px solid #7fc7e0;
-            padding-left: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .rank-card p {
-            color: var(--light);
-            line-height: 1.7;
-        }
-        
-        .progress-container {
-            width: 100%;
-            height: 8px;
-            background: rgba(100, 200, 255, 0.1);
-            border-radius: 4px;
-            margin: 15px 0;
-            overflow: hidden;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #0a4a70, #2e8fc0, #7fc7e0);
-            border-radius: 4px;
-            width: 0;
-            transition: width 1.5s ease-in-out;
-        }
-
-        .activities-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-            margin: 40px 0;
-        }
-        
-        .activity-item {
-            background: rgba(0, 40, 70, 0.6);
-            padding: 25px;
-            border-radius: 15px;
-            border-left: 4px solid #7fc7e0;
-            transition: all 0.3s ease;
+            border-radius: 60px;
+            padding: 10px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 100;
+            border: 1px solid rgba(74, 160, 208, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.4s ease;
+        }
+        .navbar.scrolled {
+            top: 10px;
+            background: rgba(2, 20, 30, 0.9);
+            box-shadow: 0 5px 20px rgba(74, 160, 208, 0.2);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .logo i {
+            color: var(--light-wave);
+            font-size: 2rem;
+            filter: drop-shadow(0 0 8px var(--glow));
+        }
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 30px;
+            transition: 0.3s;
             position: relative;
             overflow: hidden;
         }
-        
-        .activity-item::before {
+        .nav-links a::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: var(--light-wave);
+            transition: 0.3s;
+        }
+        .nav-links a:hover::before {
+            width: 100%;
+        }
+        .nav-links a:hover {
+            color: var(--white);
+            text-shadow: 0 0 8px var(--glow);
+        }
+
+        /* ===== ГЛАВНЫЙ ЭКРАН (ГЕРОЙ) ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-content {
+            max-width: 800px;
+            padding-top: 100px;
+        }
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 800;
+            line-height: 1.1;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #fff, var(--light-wave), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 30px rgba(74,160,208,0.3));
+        }
+        .hero .subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 40px;
+            border-left: 4px solid var(--light-wave);
+            padding-left: 20px;
+            font-style: italic;
+            color: var(--foam);
+        }
+        .water-button {
+            display: inline-block;
+            padding: 15px 45px;
+            background: linear-gradient(135deg, var(--ocean), var(--light-wave));
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 60px;
+            border: none;
+            box-shadow: 0 10px 25px rgba(74,160,208,0.4);
+            transition: 0.4s;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .water-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 35px rgba(74,160,208,0.6);
+            background: linear-gradient(135deg, var(--light-wave), var(--ocean));
+        }
+
+        /* ===== ВОЛНА-РАЗДЕЛИТЕЛЬ ===== */
+        .wave-divider {
+            position: relative;
+            width: 100%;
+            height: 150px;
+            background: transparent;
+            overflow: hidden;
+        }
+        .wave-divider svg {
+            position: absolute;
+            bottom: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(100, 200, 255, 0.1), transparent);
-            transition: left 0.5s ease;
+            fill: var(--abyss);
+            opacity: 0.5;
         }
-        
-        .activity-item:hover::before {
-            left: 100%;
+
+        /* ===== СЕКЦИИ ===== */
+        .section {
+            padding: 100px 0;
+            position: relative;
         }
-        
-        .activity-item:hover {
-            transform: translateX(10px);
-            background: rgba(0, 60, 90, 0.7);
-            border-left-color: #b3e0f5;
-        }
-        
-        .activity-name {
-            font-weight: 600;
-            color: var(--white);
-            flex: 1;
-            font-size: 1.1em;
-        }
-        
-        .activity-points {
-            color: var(--white);
+        .section-title {
+            font-size: 3rem;
             font-weight: 700;
-            font-size: 1.3em;
-            background: rgba(100, 200, 255, 0.2);
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 1px solid rgba(100, 200, 255, 0.3);
-            min-width: 100px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-        
-        .activity-item:hover .activity-points {
-            background: rgba(100, 200, 255, 0.3);
-            transform: scale(1.1);
-            border-color: #b3e0f5;
-        }
-
-        .honors-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin: 40px 0;
-        }
-        
-        .honor-card {
-            background: rgba(0, 40, 70, 0.6);
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(100, 200, 255, 0.2);
-        }
-        
-        .honor-card:hover {
-            transform: translateY(-5px);
-            background: rgba(0, 60, 90, 0.7);
-        }
-        
-        .honor-card.special {
-            border-color: #7fc7e0;
-            background: rgba(100, 200, 255, 0.15);
-        }
-        
-        .honor-title {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: var(--white);
-        }
-        
-        .honor-cost {
-            font-size: 1em;
-            margin-bottom: 10px;
-            color: #7fc7e0;
-        }
-        
-        .honor-cost.free {
-            color: #00ffaa;
-        }
-
-        .service-section {
-            margin-top: 80px;
-            padding-top: 40px;
-            border-top: 1px solid rgba(100, 200, 255, 0.2);
-        }
-
-        .service-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .service-header h2 {
-            font-size: 2.5em;
             margin-bottom: 20px;
-            background: linear-gradient(135deg, #b3e0f5, #ffffff);
+            text-align: center;
+            background: linear-gradient(135deg, var(--foam), var(--white));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-
-        .service-header p {
-            color: var(--light);
-            max-width: 800px;
-            margin: 0 auto;
-            font-size: 1.2em;
+        .section-sub {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 60px;
+            color: var(--foam);
+            font-size: 1.2rem;
+            font-weight: 300;
         }
 
-        .service-content {
-            background: rgba(0, 40, 70, 0.6);
-            border-radius: 20px;
-            padding: 40px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(100, 200, 255, 0.2);
-            margin-bottom: 40px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        /* Карточки пользователей (персонажи) */
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
         }
-
-        .service-description h3 {
-            font-size: 1.8em;
-            margin-bottom: 20px;
+        .user-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 30px 20px;
+            border: 1px solid var(--border-glow);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transition: 0.5s;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .user-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            border-color: var(--light-wave);
+            box-shadow: 0 30px 50px rgba(74,160,208,0.3);
+        }
+        .user-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 30%, rgba(74,160,208,0.2), transparent 70%);
+            opacity: 0;
+            transition: 0.7s;
+        }
+        .user-card:hover::after {
+            opacity: 1;
+        }
+        .user-avatar {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--light-wave);
+            box-shadow: 0 0 30px var(--glow);
+        }
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+        }
+        .user-card:hover .user-avatar img {
+            transform: scale(1.1);
+        }
+        .user-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
             color: var(--white);
-            border-left: 4px solid #7fc7e0;
-            padding-left: 15px;
+        }
+        .user-title {
+            color: var(--light-wave);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        .user-desc {
+            color: var(--foam);
+            font-size: 0.95rem;
         }
 
-        .service-description p {
-            color: var(--light);
-            margin-bottom: 25px;
-            line-height: 1.7;
-        }
-
-        .service-details {
+        /* Сетка форм дыхания */
+        .forms-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 30px;
+            gap: 25px;
         }
-
-        .service-detail-card {
-            background: rgba(0, 20, 40, 0.5);
-            padding: 25px;
-            border-radius: 15px;
-            border: 1px solid rgba(100, 200, 255, 0.1);
+        .form-item {
+            background: rgba(10, 50, 70, 0.5);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 30px;
+            border-left: 5px solid var(--light-wave);
+            transition: 0.4s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
-
-        .service-detail-card h4 {
-            color: #b3e0f5;
+        .form-item:hover {
+            background: rgba(20, 70, 100, 0.6);
+            transform: translateX(10px);
+        }
+        .form-item h3 {
+            font-size: 1.8rem;
+            color: var(--white);
             margin-bottom: 15px;
-            font-size: 1.3em;
             display: flex;
             align-items: center;
             gap: 10px;
         }
+        .form-item h3 i {
+            color: var(--light-wave);
+            font-size: 2rem;
+        }
+        .form-item p {
+            color: var(--foam);
+        }
 
-        .service-detail-card ul {
+        /* Ранги (лестница) */
+        .ranks-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .rank-row {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 30, 50, 0.6);
+            backdrop-filter: blur(5px);
+            border-radius: 60px;
+            padding: 15px 25px;
+            border: 1px solid var(--border-glow);
+            transition: 0.3s;
+        }
+        .rank-row:hover {
+            border-color: var(--light-wave);
+            box-shadow: 0 0 25px var(--glow);
+        }
+        .rank-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--ocean), var(--light-wave));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            margin-right: 25px;
+            flex-shrink: 0;
+        }
+        .rank-info {
+            flex: 1;
+        }
+        .rank-info h4 {
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 5px;
+        }
+        .rank-info p {
+            color: var(--foam);
+        }
+        .rank-points {
+            font-weight: 700;
+            color: var(--light-wave);
+            font-size: 1.3rem;
+            background: rgba(74,160,208,0.2);
+            padding: 5px 20px;
+            border-radius: 40px;
+            border: 1px solid var(--light-wave);
+        }
+
+        /* Галерея */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .gallery-item {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: 0.4s;
+            height: 250px;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+        }
+        .gallery-item:hover {
+            border-color: var(--light-wave);
+            transform: scale(1.02);
+        }
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Футер */
+        .footer {
+            background: rgba(0, 10, 20, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 60px 0 20px;
+            border-top: 1px solid rgba(74,160,208,0.2);
+            margin-top: 80px;
+        }
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        .footer-col h4 {
+            color: var(--white);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        .footer-col ul {
             list-style: none;
-            color: var(--light);
         }
-
-        .service-detail-card ul li {
+        .footer-col ul li {
             margin-bottom: 10px;
-            padding-left: 20px;
-            position: relative;
-            line-height: 1.5;
+        }
+        .footer-col ul li a {
+            color: var(--foam);
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .footer-col ul li a:hover {
+            color: var(--light-wave);
+            padding-left: 5px;
+        }
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            color: var(--foam);
+            border-top: 1px dashed rgba(74,160,208,0.3);
         }
 
-        .service-detail-card ul li:before {
-            content: '•';
-            position: absolute;
-            left: 10px;
-            color: #7fc7e0;
-            font-weight: bold;
-        }
-
+        /* Медиа-запросы */
         @media (max-width: 768px) {
-            .dark-sidebar {
-                width: 60px;
+            .navbar {
+                flex-direction: column;
+                padding: 15px;
+                border-radius: 20px;
             }
-            .dark-sidebar:hover {
-                width: 200px;
-            }
-            .main-content {
-                margin-left: 60px;
-            }
-            .dark-sidebar:hover ~ .main-content {
-                margin-left: 200px;
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-top: 10px;
             }
             .hero h1 {
-                font-size: 2.5em;
-            }
-            .features-grid,
-            .rules-grid,
-            .ranks-grid,
-            .activities-grid,
-            .members-grid {
-                grid-template-columns: 1fr;
-            }
-            .feature-card,
-            .rank-card,
-            .rule-card {
-                padding: 30px 20px;
-            }
-            .feature-icon,
-            .rank-icon,
-            .rule-icon {
-                width: 70px;
-                height: 70px;
-                font-size: 1.8em;
+                font-size: 3.5rem;
             }
             .section-title {
-                font-size: 2em;
+                font-size: 2.2rem;
             }
-            .service-content {
-                padding: 30px 20px;
-            }
-            .service-details {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .dark-sidebar {
-                width: 50px;
-            }
-            .dark-sidebar:hover {
-                width: 180px;
-            }
-            .main-content {
-                margin-left: 50px;
-            }
-            .hero {
-                padding: 60px 0 40px;
-            }
-            .hero h1 {
-                font-size: 2em;
-            }
-            .member-card {
-                padding: 25px 20px;
-            }
-            .activity-item {
+            .rank-row {
                 flex-direction: column;
-                gap: 15px;
                 text-align: center;
+                border-radius: 30px;
             }
-            .activity-name {
-                text-align: center;
-            }
-            .service-header h2 {
-                font-size: 2em;
-            }
-            .service-description h3 {
-                font-size: 1.5em;
+            .rank-icon {
+                margin-right: 0;
+                margin-bottom: 15px;
             }
         }
     </style>
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body>
-    <!-- WebGL Canvas (синие частицы) -->
-    <canvas id="webgl-canvas"></canvas>
-    
-    <!-- Боковая навигация (водная тема) -->
-    <nav class="dark-sidebar">
-        <div class="sidebar-logo">
-            <i class="fas fa-water"></i>
-        </div>
-        
-        <div class="sidebar-nav">
-            <div class="nav-item active" onclick="showSection('main')">
-                <div class="nav-icon">
-                    <i class="fas fa-home"></i>
-                </div>
-                <div class="nav-text">Главная</div>
-            </div>
-            
-            <div class="nav-item" onclick="showSection('ranks')">
-                <div class="nav-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="nav-text">Дыхание воды</div>
-            </div>
+    <!-- Видео фон (волны) -->
+    <video class="video-background" autoplay muted loop playsinline>
+        <source src="https://videos.pexels.com/video-files/3130276/3130276-uhd_2560_1440_30fps.mp4" type="video/mp4">
+        <!-- fallback: картинка -->
+    </video>
 
-            <div class="nav-item water-card" onclick="showSection('ranks2')">
-                <div class="nav-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="nav-text">Формы воды</div>
-            </div>
-            
-            <div class="nav-item" onclick="showSection('rules')">
-                <div class="nav-icon">
-                    <i class="fas fa-scroll"></i>
-                </div>
-                <div class="nav-text">Кодекс</div>
-            </div>
-            
-            <div class="nav-item" onclick="showSection('team')">
-                <div class="nav-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="nav-text">Состав отряда</div>
-            </div>
-
-            <div class="nav-item" onclick="showSection('events')">
-                <div class="nav-icon">
-                    <i class="fas fa-calendar-alt"></i>
-                </div>
-                <div class="nav-text">События</div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Основной контент -->
-    <div class="main-content">
-        <div class="container">
-            <!-- Главная страница -->
-            <div id="main" class="section active">
-                <section class="hero">
-                    <h1>СТОЛП ВОДЫ · ГИЮ ТОМИОКА</h1>
-                    <p>«Дыхание воды — это спокойствие и сила океана. Мы защищаем людей и сражаемся с демонами, следуя пути меча».</p>
-                    <p style="color: #7fc7e0;">Отряд, следующий формам воды: от Первой формы до Десятой. Здесь куётся истинное мастерство.</p>
-
-                    <div class="server-info" id="server-ip" onclick="copyServerIP()">
-                        <i class="fas fa-server"></i>
-                        <span>water-breathing.jp:27027</span>
-                    </div>
-                </section>
-
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <h3>Система рангов</h3>
-                        <p>Путь от новичка до столпа воды. Каждый ранг открывает новые формы дыхания и техники.</p>
-                        <div class="feature-button" onclick="showSection('ranks')">
-                            Изучить ранги
-                        </div>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <h3>Формы воды</h3>
-                        <p>Десять форм дыхания воды: от Первой формы «Водная поверхность» до Десятой «Непрерывный поток».</p>
-                        <div class="feature-button" onclick="showSection('ranks2')">
-                            Освоить формы
-                        </div>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <h3>Кодекс истребителя</h3>
-                        <p>Правила и традиции, которые чтит каждый ученик Томиоки. Дисциплина и уважение – основа пути.</p>
-                        <div class="feature-button" onclick="showSection('rules')">
-                            Читать кодекс
-                        </div>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3>Состав отряда</h3>
-                        <p>Ученики и последователи дыхания воды, прошедшие обучение у столпа или его заместителей.</p>
-                        <div class="feature-button" onclick="showSection('team')">
-                            Узнать состав
-                        </div>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        <h3>События</h3>
-                        <p>Тренировочные сборы, экзамены на формы, совместные вылазки и церемонии посвящения.</p>
-                        <div class="feature-button" onclick="showSection('events')">
-                            Подробнее
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Система рангов дыхания воды -->
-            <div id="ranks" class="section">
-                <div class="page-header">
-                    <h1>РАНГИ ДЫХАНИЯ ВОДЫ</h1>
-                    <p style="color: var(--light); max-width: 600px; margin: 0 auto; font-size: 1.2em;">
-                        От Ученика до Столпа – путь, требующий усердия и мастерства.
-                    </p>
-                </div>
-
-                <div class="ranks-grid">
-                    <div class="rank-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Ученик → Начинающий</h3>
-                        <div class="rank-points">10 очков</div>
-                        <div class="rank-cooldown"><i class="fas fa-clock"></i> Откат 1 день</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: 12.5%"></div>
-                        </div>
-                        <p><strong>Критерии:</strong><br>
-                        1. Выучить Первую форму «Водная поверхность».<br>
-                        2. Провести 5 тренировочных спаррингов.<br>
-                        3. Сдать норматив по дыханию.</p>
-                    </div>
-                    
-                    <div class="rank-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Начинающий → Опытный</h3>
-                        <div class="rank-points">15 очков</div>
-                        <div class="rank-cooldown"><i class="fas fa-clock"></i> Откат 1 день</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: 25%"></div>
-                        </div>
-                        <p><strong>Критерии:</strong><br>
-                        1. Освоить Вторую форму «Водяное колесо».<br>
-                        2. Участвовать в патруле (30 мин).<br>
-                        3. Победить в трёх тренировочных боях.</p>
-                    </div>
-                    
-                    <div class="rank-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Опытный → Умелый</h3>
-                        <div class="rank-points">20 очков</div>
-                        <div class="rank-cooldown"><i class="fas fa-clock"></i> Откат 2 дня</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: 37.5%"></div>
-                        </div>
-                        <p><strong>Критерии:</strong><br>
-                        1. Выучить Третью форму «Прилив».<br>
-                        2. Провести занятие с младшими учениками.<br>
-                        3. Изготовить свою катану (РП).</p>
-                    </div>
-                    
-                    <div class="rank-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Умелый → Мастер</h3>
-                        <div class="rank-points">25 очков</div>
-                        <div class="rank-cooldown"><i class="fas fa-clock"></i> Откат 2 дня</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: 50%"></div>
-                        </div>
-                        <p><strong>Критерии:</strong><br>
-                        1. Освоить Четвёртую форму «Бушующий прибой».<br>
-                        2. Убить демона (РП-бой).<br>
-                        3. Провести показательный бой перед отрядом.</p>
-                    </div>
-                    
-                    <div class="rank-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Мастер → Элита</h3>
-                        <div class="rank-points">30 очков</div>
-                        <div class="rank-cooldown"><i class="fas fa-clock"></i> Откат 2 дня</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: 62.5%"></div>
-                        </div>
-                        <p><strong>Критерии:</strong><br>
-                        1. Выучить Пятую и Шестую формы.<br>
-                        2. Участвовать в рейде на логово демонов.<br>
-                        3. Получить благодарность от столпа.</p>
-                    </div>
-                    
-                    <div class="rank-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Элита → Кандидат в столпы</h3>
-                        <div class="rank-points">35 очков</div>
-                        <div class="rank-cooldown"><i class="fas fa-clock"></i> Откат 3 дня</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: 75%"></div>
-                        </div>
-                        <p><strong>Критерии:</strong><br>
-                        1. Владеть как минимум 8 формами.<br>
-                        2. Провести успешную охоту на демона ранга Кидо.<br>
-                        3. Обучить двух учеников до ранга «Умелый».</p>
-                    </div>
-                    
-                    <div class="rank-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Кандидат → Столп воды</h3>
-                        <div class="rank-points">45 очков</div>
-                        <div class="rank-cooldown"><i class="fas fa-clock"></i> Откат 7 дней</div>
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: 100%"></div>
-                        </div>
-                        <p><strong>Критерии:</strong><br>
-                        1. Победить в поединке одного из действующих столпов (или равного противника).<br>
-                        2. Разработать собственную вариацию формы воды.<br>
-                        3. Получить признание от главного столпа.</p>
-                    </div>
-                </div>
-
-                <div class="activities-section">
-                    <h2 class="section-title">Способы получения очков</h2>
-                    <div class="activities-grid">
-                        <div class="activity-item">
-                            <div class="activity-name"><i class="fas fa-skull"></i> Убийство демона</div>
-                            <div class="activity-points">2 очка</div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-name"><i class="fas fa-trophy"></i> Убийство демона Луны</div>
-                            <div class="activity-points">5 очков</div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-name"><i class="fas fa-flag"></i> Защита деревни</div>
-                            <div class="activity-points">5 очков</div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-name"><i class="fas fa-dumbbell"></i> Тренировки (МП)</div>
-                            <div class="activity-points">5 очков</div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-name"><i class="fas fa-users"></i> Обучение младших</div>
-                            <div class="activity-points">5 очков</div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-name"><i class="fas fa-calendar-alt"></i> Участие в ивенте</div>
-                            <div class="activity-points">10 очков</div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-name"><i class="fas fa-chalkboard-teacher"></i> Проведение тренировки</div>
-                            <div class="activity-points">10 очков</div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-name"><i class="fas fa-tasks"></i> Поручение от столпа</div>
-                            <div class="activity-points">5–15 очков</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="honors-section">
-                    <h2 class="section-title">Награды · Свитки воды</h2>
-                    <div class="honors-grid">
-                        <div class="honor-card">
-                            <div class="honor-title">Малый свиток</div>
-                            <div class="honor-cost">Пропустить 1 пункт критериев</div>
-                            <div class="rank-cooldown">Выдаёт наставник</div>
-                            <div class="rank-cooldown"><i class="fas fa-clock"></i> Откат выдачи: 3 дня</div>
-                        </div>
-                        <div class="honor-card">
-                            <div class="honor-title">Средний свиток</div>
-                            <div class="honor-cost">Пропустить 2 пункта</div>
-                            <div class="rank-cooldown">Выдаёт столп или заместитель</div>
-                            <div class="rank-cooldown"><i class="fas fa-clock"></i> Откат выдачи: 4 дня</div>
-                        </div>
-                        <div class="honor-card">
-                            <div class="honor-title">Большой свиток</div>
-                            <div class="honor-cost">Пропустить 3 пункта</div>
-                            <div class="rank-cooldown">Выдаёт главный столп</div>
-                            <div class="rank-cooldown"><i class="fas fa-clock"></i> Откат выдачи: 5 дней</div>
-                        </div>
-                        <div class="honor-card special">
-                            <div class="honor-title">Свиток мастера</div>
-                            <div class="honor-cost free">Повышение без критериев</div>
-                            <div class="rank-cooldown">Только от главы отряда</div>
-                            <div class="rank-cooldown"><i class="fas fa-clock"></i> Откат выдачи: 7 дней</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Формы воды (ранее Мрак) – теперь второй раздел с формами -->
-            <div id="ranks2" class="section">
-                <div class="page-header">
-                    <h1>ФОРМЫ ДЫХАНИЯ ВОДЫ</h1>
-                    <p style="color: var(--light); max-width: 600px; margin: 0 auto; font-size: 1.2em;">
-                        Десять основных форм, которые должен освоить каждый последователь.
-                    </p>
-                </div>
-
-                <div class="ranks-grid">
-                    <div class="rank-card water-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Первая форма · Водная поверхность</h3>
-                        <p>Базовый удар, рассекающий врага с плавным движением, подобным ряби.</p>
-                    </div>
-                    <div class="rank-card water-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Вторая форма · Водяное колесо</h3>
-                        <p>Круговой удар в прыжке, напоминающий вращающееся водяное колесо.</p>
-                    </div>
-                    <div class="rank-card water-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Третья форма · Прилив</h3>
-                        <p>Серия быстрых горизонтальных и вертикальных ударов, подобных волнам.</p>
-                    </div>
-                    <div class="rank-card water-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Четвёртая форма · Бушующий прибой</h3>
-                        <p>Непрерывные удары, создающие эффект накатывающих волн.</p>
-                    </div>
-                    <div class="rank-card water-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Пятая форма · Капля дождя</h3>
-                        <p>Серия быстрых колющих ударов, словно капли дождя.</p>
-                    </div>
-                    <div class="rank-card water-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Шестая форма · Водоворот</h3>
-                        <p>Закручивающий удар, втягивающий противника.</p>
-                    </div>
-                    <div class="rank-card water-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Седьмая форма · Ледяная рябь</h3>
-                        <p>Обманчиво мягкое движение, скрывающее смертельный удар.</p>
-                    </div>
-                    <div class="rank-card water-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Восьмая форма · Водопад</h3>
-                        <p>Мощный рубящий удар сверху вниз, как поток водопада.</p>
-                    </div>
-                    <div class="rank-card water-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Девятая форма · Бурлящий поток</h3>
-                        <p>Круговые движения, отражающие атаки и контратакующие.</p>
-                    </div>
-                    <div class="rank-card water-card">
-                        <div class="rank-icon"><i class="fas fa-water"></i></div>
-                        <h3 class="rank-title">Десятая форма · Непрерывный поток</h3>
-                        <p>Высшая форма: бесконечная череда атак, подобная течению реки.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Регламент / Кодекс -->
-            <div id="rules" class="section">
-                <div class="page-header">
-                    <h1>КОДЕКС ИСТРЕБИТЕЛЯ</h1>
-                    <p style="color: var(--light); max-width: 600px; margin: 0 auto; font-size: 1.2em;">
-                        Правила, традиции и нормы поведения в отряде дыхания воды.
-                    </p>
-                </div>
-
-                <div class="rules-grid">
-                    <div class="rule-card">
-                        <div class="rule-icon"><i class="fas fa-book"></i></div>
-                        <h3 class="rule-title">Определение</h3>
-                        <ul class="rule-list">
-                            <li>Кодекс истребителя – свод правил, регламентирующих поведение, тренировки и боевые вылазки членов отряда.</li>
-                        </ul>
-                    </div>
-                    <div class="rule-card">
-                        <div class="rule-icon"><i class="fas fa-gavel"></i></div>
-                        <h3 class="rule-title">Цель</h3>
-                        <ul class="rule-list">
-                            <li>Обеспечение дисциплины, сохранение традиций и эффективная борьба с демонами.</li>
-                        </ul>
-                    </div>
-                    <div class="rule-card">
-                        <div class="rule-icon"><i class="fas fa-clipboard-list"></i></div>
-                        <h3 class="rule-title">Содержание</h3>
-                        <ul class="rule-list">
-                            <li>Нормы поведения, квоты тренировок, правила проведения поединков, иерархия.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="page-header" style="margin-top: 80px;">
-                    <h2 class="category-title">Тренировочные нормативы</h2>
-                </div>
-
-                <div class="ranks-grid">
-                    <div class="rank-card">
-                        <div class="rank-icon"><i class="fas fa-clock"></i></div>
-                        <h3 class="rank-title">Старший состав</h3>
-                        <div class="rank-points">220 минут в неделю</div>
-                        <div class="rank-cooldown"><i class="fas fa-user"></i> Столп, заместители</div>
-                        <p>Обязаны проводить тренировки и контролировать учеников.</p>
-                    </div>
-                    <div class="rank-card">
-                        <div class="rank-icon"><i class="fas fa-clock"></i></div>
-                        <h3 class="rank-title">Основной состав</h3>
-                        <div class="rank-points">180 минут в неделю</div>
-                        <div class="rank-cooldown"><i class="fas fa-user"></i> Ученики, мастера</div>
-                        <p>Регулярные тренировки для поддержания формы.</p>
-                    </div>
-                </div>
-
-                <div class="page-header" style="margin-top: 80px;">
-                    <h2 class="category-title">Система отпусков</h2>
-                </div>
-                <div class="ranks-grid">
-                    <div class="rank-card">
-                        <div class="rank-icon"><i class="fas fa-calendar-alt"></i></div>
-                        <h3 class="rank-title">Общие правила</h3>
-                        <div class="rank-points">10 дней в месяц</div>
-                        <p>Отпускные дни сгорают в конце месяца. Необходимо согласовывать с руководством.</p>
-                    </div>
-                    <div class="rank-card">
-                        <div class="rank-icon"><i class="fas fa-ban"></i></div>
-                        <h3 class="rank-title">Пропуск тренировок</h3>
-                        <div class="rank-points">1 день отпуска</div>
-                        <p>За неявку без уважительной причины списывается день отпуска.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Состав отряда -->
-            <div id="team" class="section">
-                <div class="page-header">
-                    <h1>СОСТАВ ОТРЯДА ДЫХАНИЯ ВОДЫ</h1>
-                    <p style="color: var(--light); max-width: 600px; margin: 0 auto; font-size: 1.2em;">
-                        Столпы, мастера и ученики, следующие пути воды.
-                    </p>
-                </div>
-
-                <div class="team-category">
-                    <h2 class="category-title">Глава и столпы</h2>
-                    <div class="members-grid">
-                        <div class="member-card water-card">
-                            <div class="member-avatar"><i class="fas fa-crown"></i></div>
-                            <div class="member-rank">Столп воды</div>
-                            <div class="member-name">Гию Томиока</div>
-                            <div class="member-role">Глава отряда · Девятая форма</div>
-                        </div>
-                        <div class="member-card">
-                            <div class="member-avatar"><i class="fas fa-water"></i></div>
-                            <div class="member-rank">Наставник</div>
-                            <div class="member-name">Сабито</div>
-                            <div class="member-role">Правая рука (память)</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="team-category">
-                    <h2 class="category-title">Заместители</h2>
-                    <div class="members-grid">
-                        <div class="member-card vacant">
-                            <div class="member-avatar"><i class="fas fa-water"></i></div>
-                            <div class="member-rank">Первый заместитель</div>
-                            <div class="member-name">[Вакантно]</div>
-                            <div class="member-role">Требуется кандидат 8+ форм</div>
-                        </div>
-                        <div class="member-card water-card">
-                            <div class="member-avatar"><i class="fas fa-water"></i></div>
-                            <div class="member-rank">Второй заместитель</div>
-                            <div class="member-name">Макото</div>
-                            <div class="member-role">Владеет 6 формами</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="team-category">
-                    <h2 class="category-title">Основной состав</h2>
-                    <div class="members-grid">
-                        <div class="member-card">
-                            <div class="member-avatar"><i class="fas fa-user"></i></div>
-                            <div class="member-rank">Мастер (7 форм)</div>
-                            <div class="member-name">Канао Цуюри</div>
-                            <div class="member-role">Ученица Гию</div>
-                        </div>
-                        <div class="member-card">
-                            <div class="member-avatar"><i class="fas fa-user"></i></div>
-                            <div class="member-rank">Опытный (5 форм)</div>
-                            <div class="member-name">Муитиро Токито</div>
-                            <div class="member-role">Туман, но изучает воду</div>
-                        </div>
-                        <div class="member-card vacant">
-                            <div class="member-avatar"><i class="fas fa-user"></i></div>
-                            <div class="member-rank">Ученик (2 формы)</div>
-                            <div class="member-name">[Вакантно]</div>
-                            <div class="member-role">Желающие добро пожаловать</div>
-                        </div>
-                        <div class="member-card vacant">
-                            <div class="member-avatar"><i class="fas fa-user"></i></div>
-                            <div class="member-rank">Ученик (1 форма)</div>
-                            <div class="member-name">[Вакантно]</div>
-                            <div class="member-role">Начальный уровень</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- События -->
-            <div id="events" class="section">
-                <div class="page-header">
-                    <h1>СОБЫТИЯ ОТРЯДА</h1>
-                    <p style="color: var(--light); max-width: 600px; margin: 0 auto; font-size: 1.2em;">
-                        Тренировки, экзамены, церемонии и вылазки.
-                    </p>
-                </div>
-
-                <div class="features-grid">
-                    <div class="feature-card" onclick="scrollToService('water-gathering')">
-                        <div class="feature-icon"><i class="fas fa-water"></i></div>
-                        <h3>Собрание у воды</h3>
-                        <p>Еженедельная встреча для обмена опытом и разбора ошибок.</p>
-                        <div class="feature-button">Подробнее</div>
-                    </div>
-                    <div class="feature-card" onclick="scrollToService('exam-forms')">
-                        <div class="feature-icon"><i class="fas fa-fist-raised"></i></div>
-                        <h3>Экзамен на формы</h3>
-                        <p>Испытание для повышения ранга – демонстрация изученных форм.</p>
-                        <div class="feature-button">Подробнее</div>
-                    </div>
-                    <div class="feature-card" onclick="scrollToService('hunting-expedition')">
-                        <div class="feature-icon"><i class="fas fa-skull"></i></div>
-                        <h3>Охотничий рейд</h3>
-                        <p>Совместная вылазка на территорию демонов под руководством столпа.</p>
-                        <div class="feature-button">Подробнее</div>
-                    </div>
-                </div>
-
-                <div id="water-gathering" class="service-section">
-                    <div class="service-header">
-                        <h2>Собрание у воды</h2>
-                        <p>Каждый понедельник в 19:00 у водопада.</p>
-                    </div>
-                    <div class="service-content">
-                        <h3>Описание</h3>
-                        <p>Неформальная встреча, где участники делятся успехами, разбирают ошибки и получают советы от старших.</p>
-                        <div class="service-details">
-                            <div class="service-detail-card">
-                                <h4><i class="fas fa-calendar"></i> Расписание</h4>
-                                <p>Каждый понедельник, 19:00 (по серверу).</p>
-                            </div>
-                            <div class="service-detail-card">
-                                <h4><i class="fas fa-award"></i> Награда</h4>
-                                <p>+5 очков за присутствие.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="exam-forms" class="service-section">
-                    <div class="service-header">
-                        <h2>Экзамен на формы</h2>
-                        <p>Проводится раз в две недели.</p>
-                    </div>
-                    <div class="service-content">
-                        <h3>Описание</h3>
-                        <p>Ученики демонстрируют выученные формы перед комиссией из столпов и наставников. Успешная сдача даёт право на повышение ранга.</p>
-                        <div class="service-details">
-                            <div class="service-detail-card">
-                                <h4><i class="fas fa-calendar"></i> Ближайшая дата</h4>
-                                <p>Уточняется в Discord.</p>
-                            </div>
-                            <div class="service-detail-card">
-                                <h4><i class="fas fa-award"></i> Награда</h4>
-                                <p>Повышение ранга + 10 очков.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="hunting-expedition" class="service-section">
-                    <div class="service-header">
-                        <h2>Охотничий рейд</h2>
-                        <p>Выездное мероприятие по уничтожению демонов.</p>
-                    </div>
-                    <div class="service-content">
-                        <h3>Описание</h3>
-                        <p>Группа истребителей под руководством столпа отправляется в опасную зону для зачистки. Требуется хорошая физическая подготовка и знание минимум трёх форм.</p>
-                        <div class="service-details">
-                            <div class="service-detail-card">
-                                <h4><i class="fas fa-calendar"></i> Периодичность</h4>
-                                <p>1 раз в месяц.</p>
-                            </div>
-                            <div class="service-detail-card">
-                                <h4><i class="fas fa-award"></i> Награда</h4>
-                                <p>15 очков + возможность получить свиток.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>© 2026 Столп воды Гию Томиока · Отряд дыхания воды</p>
-            <p style="margin-top: 10px; font-size: 0.9em;">Спокойствие • Сила • Дисциплина</p>
-        </div>
+    <!-- Прелоадер -->
+    <div class="preloader" id="preloader">
+        <div class="water-drop"></div>
     </div>
 
+    <!-- Навигация -->
+    <nav class="navbar" id="navbar">
+        <div class="logo">
+            <i class="fas fa-droplet"></i>
+            <span>Водный Путь</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Домой</a></li>
+            <li><a href="#users">Мастера</a></li>
+            <li><a href="#forms">Формы</a></li>
+            <li><a href="#ranks">Ранги</a></li>
+            <li><a href="#gallery">Галерея</a></li>
+        </ul>
+    </nav>
+
+    <!-- Главная секция -->
+    <section id="home" class="hero">
+        <div class="container hero-content" data-aos="fade-up" data-aos-duration="1500">
+            <h1>Дыхание<br>Воды</h1>
+            <div class="subtitle">Спокойствие океана, мощь цунами</div>
+            <a href="#users" class="water-button">Познать путь <i class="fas fa-arrow-right" style="margin-left: 10px;"></i></a>
+        </div>
+        <!-- декоративная волна внизу -->
+        <div class="wave-divider" style="position: absolute; bottom: 0; left: 0;">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="var(--abyss)"></path>
+                <path d="M0,0V15.81C13,21.25,27.93,25.67,44.24,28.45c69.76,11.85,139.5,7.8,209.28-4.14,58.85-10.06,117.44-26.37,176.23-34.86,91.75-13.24,184.28-8.15,276.24,7.19,46.44,7.76,92.62,18.81,138.53,30.51,38.83,9.9,77.57,20.3,116.38,26.41,35.85,5.64,71.85,5.1,107.71,1.5,28.82-2.9,57.31-9.88,85.62-17.41V0Z" opacity=".5" fill="var(--ocean)"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Мастера воды (персонажи) -->
+    <section id="users" class="section">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-down">Мастера Дыхания Воды</h2>
+            <p class="section-sub" data-aos="fade-down" data-aos-delay="100">Легендарные столпы и их последователи, посвятившие себя этому пути.</p>
+            <div class="users-grid">
+                <!-- Гию Томиока -->
+                <div class="user-card" data-aos="flip-left" data-aos-delay="100">
+                    <div class="user-avatar">
+                        <img src="https://i.pinimg.com/736x/8e/9e/0c/8e9e0c2b1e5b7c8d9e0f2a3b4c5d6e7f.jpg" alt="Гию Томиока" onerror="this.src='https://via.placeholder.com/150x150?text=Giyu'">
+                    </div>
+                    <div class="user-name">Гию Томиока</div>
+                    <div class="user-title">Столп воды</div>
+                    <div class="user-desc">Спокойный и отстранённый, но невероятно преданный своему делу. Владеет всеми формами, включая Девятую.</div>
+                </div>
+                <!-- Сабито -->
+                <div class="user-card" data-aos="flip-left" data-aos-delay="200">
+                    <div class="user-avatar">
+                        <img src="https://i.pinimg.com/736x/7a/3b/2c/7a3b2c8d9e0f1a2b3c4d5e6f7a8b9c0d.jpg" alt="Сабито" onerror="this.src='https://via.placeholder.com/150x150?text=Sabito'">
+                    </div>
+                    <div class="user-name">Сабито</div>
+                    <div class="user-title">Наставник (дух)</div>
+                    <div class="user-desc">Тренировал Танжиро, олицетворение строгости и идеальной техники воды. Его маска стала символом.</div>
+                </div>
+                <!-- Макомо (оригинальный персонаж, можно добавить каноничного) -->
+                <div class="user-card" data-aos="flip-left" data-aos-delay="300">
+                    <div class="user-avatar">
+                        <img src="https://i.pinimg.com/736x/2d/4e/6f/2d4e6f8a9b0c1d2e3f4a5b6c7d8e9f0a.jpg" alt="Канао" onerror="this.src='https://via.placeholder.com/150x150?text=Kanao'">
+                    </div>
+                    <div class="user-name">Канао Цуюри</div>
+                    <div class="user-title">Цветочный столп (изучала воду)</div>
+                    <div class="user-desc">Ученица Гию, освоила базовые формы воды, комбинируя с цветочным дыханием.</div>
+                </div>
+                <!-- Муитиро Токито (использует туман, но добавим как почётного) -->
+                <div class="user-card" data-aos="flip-left" data-aos-delay="400">
+                    <div class="user-avatar">
+                        <img src="https://i.pinimg.com/736x/3a/5b/7c/3a5b7c8d9e0f1a2b3c4d5e6f7a8b9c0d.jpg" alt="Муитиро" onerror="this.src='https://via.placeholder.com/150x150?text=Muichiro'">
+                    </div>
+                    <div class="user-name">Муитиро Токито</div>
+                    <div class="user-title">Столп тумана</div>
+                    <div class="user-desc">Редко, но использует водные техники в комбинации с туманом.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Волновой разделитель -->
+    <div class="wave-divider">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" fill="var(--ocean)"></path>
+        </svg>
+    </div>
+
+    <!-- Формы дыхания воды -->
+    <section id="forms" class="section">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-down">Десять форм воды</h2>
+            <p class="section-sub" data-aos="fade-down" data-aos-delay="100">Каждая форма — словно течение реки, непредсказуемое и смертоносное.</p>
+            <div class="forms-grid">
+                <div class="form-item" data-aos="fade-right" data-aos-delay="50"><h3><i class="fas fa-water"></i> Первая · Водная поверхность</h3><p>Базовый горизонтальный удар, подобный глади озера.</p></div>
+                <div class="form-item" data-aos="fade-right" data-aos-delay="100"><h3><i class="fas fa-water"></i> Вторая · Водяное колесо</h3><p>Круговой удар в прыжке, словно вращающееся колесо.</p></div>
+                <div class="form-item" data-aos="fade-right" data-aos-delay="150"><h3><i class="fas fa-water"></i> Третья · Прилив</h3><p>Серия быстрых горизонтальных и вертикальных ударов.</p></div>
+                <div class="form-item" data-aos="fade-right" data-aos-delay="200"><h3><i class="fas fa-water"></i> Четвёртая · Бушующий прибой</h3><p>Непрерывные атаки, накатывающие как волны.</p></div>
+                <div class="form-item" data-aos="fade-right" data-aos-delay="250"><h3><i class="fas fa-water"></i> Пятая · Капля дождя</h3><p>Серия колющих ударов, подобных дождю.</p></div>
+                <div class="form-item" data-aos="fade-right" data-aos-delay="300"><h3><i class="fas fa-water"></i> Шестая · Водоворот</h3><p>Закручивающий удар, втягивающий врага.</p></div>
+                <div class="form-item" data-aos="fade-right" data-aos-delay="350"><h3><i class="fas fa-water"></i> Седьмая · Ледяная рябь</h3><p>Обманчиво мягкое движение, скрывающее смерть.</p></div>
+                <div class="form-item" data-aos="fade-right" data-aos-delay="400"><h3><i class="fas fa-water"></i> Восьмая · Водопад</h3><p>Мощный рубящий удар сверху.</p></div>
+                <div class="form-item" data-aos="fade-right" data-aos-delay="450"><h3><i class="fas fa-water"></i> Девятая · Бурлящий поток</h3><p>Круговые защиты и контратаки.</p></div>
+                <div class="form-item" data-aos="fade-right" data-aos-delay="500"><h3><i class="fas fa-water"></i> Десятая · Непрерывный поток</h3><p>Бесконечная череда ударов, подобная течению.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ранги иерархии -->
+    <section id="ranks" class="section" style="background: rgba(0,20,40,0.3);">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-down">Ранги мастерства</h2>
+            <p class="section-sub" data-aos="fade-down">Путь от новичка до столпа, отмеченный овладением формами.</p>
+            <div class="ranks-timeline">
+                <div class="rank-row" data-aos="fade-left"><div class="rank-icon">1</div><div class="rank-info"><h4>Ученик</h4><p>Освоил 1-2 формы</p></div><div class="rank-points">10 очков</div></div>
+                <div class="rank-row" data-aos="fade-left"><div class="rank-icon">2</div><div class="rank-info"><h4>Начинающий</h4><p>3-4 формы</p></div><div class="rank-points">15 очков</div></div>
+                <div class="rank-row" data-aos="fade-left"><div class="rank-icon">3</div><div class="rank-info"><h4>Опытный</h4><p>5-6 форм</p></div><div class="rank-points">20 очков</div></div>
+                <div class="rank-row" data-aos="fade-left"><div class="rank-icon">4</div><div class="rank-info"><h4>Мастер</h4><p>7-8 форм</p></div><div class="rank-points">25 очков</div></div>
+                <div class="rank-row" data-aos="fade-left"><div class="rank-icon">5</div><div class="rank-info"><h4>Кандидат в столпы</h4><p>9 форм</p></div><div class="rank-points">35 очков</div></div>
+                <div class="rank-row" data-aos="fade-left"><div class="rank-icon">6</div><div class="rank-info"><h4>Столп воды</h4><p>10 форм + уникальная</p></div><div class="rank-points">50 очков</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Галерея -->
+    <section id="gallery" class="section">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-down">Галерея воды</h2>
+            <p class="section-sub" data-aos="fade-down">Моменты, запечатлевшие красоту и мощь водного дыхания.</p>
+            <div class="gallery">
+                <div class="gallery-item" data-aos="zoom-in"><img src="https://i.pinimg.com/736x/1a/2b/3c/1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d.jpg" alt="Водопад" onerror="this.src='https://via.placeholder.com/300x250?text=Wave1'"></div>
+                <div class="gallery-item" data-aos="zoom-in" data-aos-delay="100"><img src="https://i.pinimg.com/736x/2b/3c/4d/2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e.jpg" alt="Океан" onerror="this.src='https://via.placeholder.com/300x250?text=Wave2'"></div>
+                <div class="gallery-item" data-aos="zoom-in" data-aos-delay="200"><img src="https://i.pinimg.com/736x/3c/4d/5e/3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f.jpg" alt="Река" onerror="this.src='https://via.placeholder.com/300x250?text=Wave3'"></div>
+                <div class="gallery-item" data-aos="zoom-in" data-aos-delay="300"><img src="https://i.pinimg.com/736x/4d/5e/6f/4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a.jpg" alt="Бой" onerror="this.src='https://via.placeholder.com/300x250?text=Wave4'"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <h4>Дыхание воды</h4>
+                    <ul>
+                        <li><a href="#home">Главная</a></li>
+                        <li><a href="#users">Мастера</a></li>
+                        <li><a href="#forms">Формы</a></li>
+                        <li><a href="#ranks">Ранги</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Сообщество</h4>
+                    <ul>
+                        <li><a href="#">Дискорд</a></li>
+                        <li><a href="#">Гайды</a></li>
+                        <li><a href="#">События</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Контакты</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> water@breath.jp</li>
+                        <li><i class="fas fa-server"></i> water-breathing.jp:27027</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 2026 Дыхание Воды. Все права защищены. <br> <span style="color: var(--light-wave);">「水の呼吸 - 静かなる力」</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Подключение скриптов -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.style.display = 'none';
-            });
-            const targetSection = document.getElementById(sectionId);
-            if (targetSection) {
-                targetSection.style.display = 'block';
-                targetSection.classList.add('active');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                if (sectionId === 'ranks') {
-                    setTimeout(animateProgressBars, 300);
-                }
-            }
-            document.querySelectorAll('.nav-item').forEach(link => {
-                link.classList.remove('active');
-            });
-            const activeLink = document.querySelector(`.nav-item[onclick="showSection('${sectionId}')"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-        }
-
-        function copyServerIP() {
-            const serverIP = 'water-breathing.jp:27027';
-            const serverElement = document.getElementById('server-ip');
-            navigator.clipboard.writeText(serverIP).then(() => {
-                serverElement.classList.add('copied');
-                setTimeout(() => {
-                    serverElement.classList.remove('copied');
-                }, 2000);
-            }).catch(err => {
-                const textArea = document.createElement('textarea');
-                textArea.value = serverIP;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                serverElement.classList.add('copied');
-                setTimeout(() => {
-                    serverElement.classList.remove('copied');
-                }, 2000);
-            });
-        }
-
-        function animateProgressBars() {
-            const progressBars = document.querySelectorAll('.progress-bar');
-            progressBars.forEach(bar => {
-                const width = bar.style.width;
-                bar.style.width = '0';
-                setTimeout(() => {
-                    bar.style.width = width;
-                }, 100);
-            });
-        }
-
-        function scrollToService(serviceId) {
-            if (!document.getElementById('events').classList.contains('active')) {
-                showSection('events');
-            }
-            setTimeout(() => {
-                const element = document.getElementById(serviceId);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    element.style.transition = 'all 0.5s ease';
-                    element.style.boxShadow = '0 0 30px rgba(100, 200, 255, 0.5)';
-                    setTimeout(() => {
-                        element.style.boxShadow = 'none';
-                    }, 1500);
-                }
-            }, 300);
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            showSection('main');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.feature-card, .member-card, .rule-card, .rank-card, .activity-item, .honor-card, .service-content').forEach(el => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(30px)';
-                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                observer.observe(el);
-            });
+        // Инициализация AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
         });
 
-        // WebGL Background – синие частицы (адаптировано под водную тему)
-        class WebGLBackground {
-            constructor() {
-                this.canvas = document.getElementById('webgl-canvas');
-                this.gl = this.canvas.getContext('webgl');
-                this.particles = [];
-                this.mouse = { x: 0, y: 0 };
-                this.time = 0;
-                if (!this.gl) return;
-                this.init();
-                this.animate();
-                document.addEventListener('mousemove', (e) => {
-                    this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-                    this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-                });
-            }
-
-            init() {
-                this.resize();
-                window.addEventListener('resize', () => this.resize());
-                this.createShaders();
-                this.createBuffers();
-                this.createParticles();
-            }
-
-            resize() {
-                this.canvas.width = window.innerWidth;
-                this.canvas.height = window.innerHeight;
-                this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-            }
-
-            createShaders() {
-                const vsSource = `
-                    attribute vec2 aPosition;
-                    attribute float aSize;
-                    attribute vec3 aColor;
-                    attribute float aAlpha;
-                    uniform float uTime;
-                    uniform vec2 uMouse;
-                    uniform vec2 uResolution;
-                    varying vec3 vColor;
-                    varying float vAlpha;
-                    void main() {
-                        float moveX = sin(uTime * 0.5 + aPosition.x) * 0.2;
-                        float moveY = cos(uTime * 0.3 + aPosition.y) * 0.2;
-                        float mouseDist = distance(aPosition, uMouse);
-                        float mouseInfluence = 0.3 * (1.0 - smoothstep(0.0, 0.5, mouseDist));
-                        vec2 position = aPosition + vec2(moveX, moveY) + uMouse * mouseInfluence;
-                        vec2 normalized = position / uResolution * 2.0 - 1.0;
-                        gl_Position = vec4(normalized.x, normalized.y, 0.0, 1.0);
-                        float pulse = sin(uTime * 2.0 + aPosition.x + aPosition.y) * 0.3 + 0.7;
-                        gl_PointSize = aSize * pulse;
-                        vColor = aColor;
-                        vAlpha = aAlpha * pulse;
-                    }
-                `;
-                const fsSource = `
-                    precision mediump float;
-                    varying vec3 vColor;
-                    varying float vAlpha;
-                    void main() {
-                        float dist = length(gl_PointCoord - vec2(0.5));
-                        if (dist > 0.5) discard;
-                        float glow = 1.0 - smoothstep(0.3, 0.5, dist);
-                        gl_FragColor = vec4(vColor, vAlpha * glow * glow);
-                    }
-                `;
-                const vertexShader = this.compileShader(this.gl.VERTEX_SHADER, vsSource);
-                const fragmentShader = this.compileShader(this.gl.FRAGMENT_SHADER, fsSource);
-                this.program = this.gl.createProgram();
-                this.gl.attachShader(this.program, vertexShader);
-                this.gl.attachShader(this.program, fragmentShader);
-                this.gl.linkProgram(this.program);
-                if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS)) {
-                    console.error('Shader link failed');
-                }
-                this.gl.useProgram(this.program);
-                this.aPosition = this.gl.getAttribLocation(this.program, 'aPosition');
-                this.aSize = this.gl.getAttribLocation(this.program, 'aSize');
-                this.aColor = this.gl.getAttribLocation(this.program, 'aColor');
-                this.aAlpha = this.gl.getAttribLocation(this.program, 'aAlpha');
-                this.uTime = this.gl.getUniformLocation(this.program, 'uTime');
-                this.uMouse = this.gl.getUniformLocation(this.program, 'uMouse');
-                this.uResolution = this.gl.getUniformLocation(this.program, 'uResolution');
-            }
-
-            compileShader(type, source) {
-                const shader = this.gl.createShader(type);
-                this.gl.shaderSource(shader, source);
-                this.gl.compileShader(shader);
-                if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-                    console.error('Shader compile error');
-                    return null;
-                }
-                return shader;
-            }
-
-            createBuffers() {
-                this.positionBuffer = this.gl.createBuffer();
-                this.sizeBuffer = this.gl.createBuffer();
-                this.colorBuffer = this.gl.createBuffer();
-                this.alphaBuffer = this.gl.createBuffer();
-            }
-
-            createParticles() {
-                const count = 400;
-                for (let i = 0; i < count; i++) {
-                    const blueShades = [
-                        [0.5, 0.8, 1.0], // светло-голубой
-                        [0.3, 0.6, 1.0], // голубой
-                        [0.2, 0.4, 0.9], // синий
-                        [0.1, 0.3, 0.7], // тёмно-синий
-                        [0.7, 0.9, 1.0]  // почти белый
-                    ];
-                    const col = blueShades[Math.floor(Math.random() * blueShades.length)];
-                    this.particles.push({
-                        x: Math.random() * this.canvas.width,
-                        y: Math.random() * this.canvas.height,
-                        size: Math.random() * 4 + 1.5,
-                        color: col,
-                        alpha: Math.random() * 0.4 + 0.2,
-                        speedX: (Math.random() - 0.5) * 0.3,
-                        speedY: (Math.random() - 0.5) * 0.3,
-                    });
-                }
-            }
-
-            updateParticles() {
-                this.particles.forEach(p => {
-                    p.x += p.speedX + Math.sin(this.time + p.y) * 0.1;
-                    p.y += p.speedY + Math.cos(this.time + p.x) * 0.1;
-                    if (p.x < -50) p.x = this.canvas.width + 50;
-                    if (p.x > this.canvas.width + 50) p.x = -50;
-                    if (p.y < -50) p.y = this.canvas.height + 50;
-                    if (p.y > this.canvas.height + 50) p.y = -50;
-                });
-            }
-
-            render() {
-                this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
-                this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-                this.gl.uniform1f(this.uTime, this.time);
-                this.gl.uniform2f(this.uMouse, this.mouse.x, this.mouse.y);
-                this.gl.uniform2f(this.uResolution, this.canvas.width, this.canvas.height);
-
-                const positions = [], sizes = [], colors = [], alphas = [];
-                this.particles.forEach(p => {
-                    positions.push(p.x, p.y);
-                    sizes.push(p.size);
-                    colors.push(...p.color);
-                    alphas.push(p.alpha);
-                });
-
-                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW);
-                this.gl.enableVertexAttribArray(this.aPosition);
-                this.gl.vertexAttribPointer(this.aPosition, 2, this.gl.FLOAT, false, 0, 0);
-
-                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.sizeBuffer);
-                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(sizes), this.gl.STATIC_DRAW);
-                this.gl.enableVertexAttribArray(this.aSize);
-                this.gl.vertexAttribPointer(this.aSize, 1, this.gl.FLOAT, false, 0, 0);
-
-                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.colorBuffer);
-                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
-                this.gl.enableVertexAttribArray(this.aColor);
-                this.gl.vertexAttribPointer(this.aColor, 3, this.gl.FLOAT, false, 0, 0);
-
-                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.alphaBuffer);
-                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(alphas), this.gl.STATIC_DRAW);
-                this.gl.enableVertexAttribArray(this.aAlpha);
-                this.gl.vertexAttribPointer(this.aAlpha, 1, this.gl.FLOAT, false, 0, 0);
-
-                this.gl.drawArrays(this.gl.POINTS, 0, this.particles.length);
-            }
-
-            animate() {
-                this.time += 0.01;
-                this.updateParticles();
-                this.render();
-                requestAnimationFrame(() => this.animate());
-            }
-        }
-
+        // Прелоадер
         window.addEventListener('load', () => {
-            new WebGLBackground();
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 800);
+        });
+
+        // Навбар при скролле
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Плавный скролл к якорям
+        document.querySelectorAll('.nav-links a, .water-button').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId && targetId !== '#') {
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
         });
     </script>
 </body>
