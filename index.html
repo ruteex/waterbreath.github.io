@@ -401,6 +401,7 @@
             overflow-x: auto;
             border-radius: 30px;
             border: 1px solid var(--glass-border);
+            margin: 20px 0;
         }
         .water-table {
             width: 100%;
@@ -411,9 +412,11 @@
             background: rgba(0,0,0,0.3);
             padding: 15px;
             color: var(--wave-light);
+            font-weight: 600;
+            text-align: left;
         }
         .water-table td {
-            padding: 12px;
+            padding: 12px 15px;
             border-bottom: 1px solid var(--glass-border);
         }
         .discord-tag {
@@ -421,6 +424,7 @@
             padding: 5px 15px;
             border-radius: 30px;
             font-family: monospace;
+            display: inline-block;
         }
         .rank-pill {
             background: var(--deep-teal);
@@ -428,6 +432,16 @@
             padding: 3px 12px;
             border-radius: 30px;
             font-weight: 600;
+            display: inline-block;
+        }
+        .empty-slot {
+            color: var(--coral);
+            font-style: italic;
+        }
+        .warning-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         /* прогресс */
@@ -868,248 +882,149 @@
             </div>
         </section>
 
-        <!-- СОСТАВ ДЫХАНИЯ -->
-    <section id="staff-section" class="page-section">
-        <div class="container">
-            <section class="banner" id="home">
-                <video class="banner-video" autoplay muted loop playsinline>
-                    <source src="https://cdn.pixabay.com/vimeo/332529151/water-23625.mp4?width=1280&hash=7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b" type="video/mp4">
-                    Ваш браузер не поддерживает видео.
-                </video>
-                <div class="banner-overlay"></div>
-                <div class="banner-content">
-                    <h1 class="banner-title">
-                        <span class="title-word" style="--i: 0">СОСТАВ</span>
-                        <span class="title-word" style="--i: 1">ВОДЫ</span>
-                    </h1>
-                    <p class="banner-subtitle">Иерархия и члены Дыхания Воды</p>
-                    <p class="animated-text text-delay-1 flowing-text">Старший состав</p>
+        <!-- СОСТАВ ДЫХАНИЯ (ваша полная версия) -->
+        <section id="staff-section" class="page-section">
+            <div class="hero">
+                <h1 class="hero-title">СОСТАВ ВОДЫ</h1>
+                <p class="hero-sub">Иерархия и члены Дыхания Воды</p>
+                <p class="hero-sub" style="font-size:1rem;">Старший состав</p>
+            </div>
+
+            <div class="vault">
+                <h2 class="vault-title"><i class="fas fa-users"></i> Старший состав Дыхания Воды</h2>
+                <p class="hero-sub" style="font-size:1.2rem; text-align:left;">Полный список старших членов состава.</p>
+                
+                <div class="progress-track">
+                    <div class="progress-fill" style="width:37.5%"></div>
                 </div>
-            </section>
+                <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
+                    <span>Заполненность состава:</span>
+                    <span>37.5%</span>
+                </div>
+                
+                <!-- Столп Воды -->
+                <h3 style="color:var(--wave-light); margin:30px 0 15px;">Столп Воды</h3>
+                <div class="table-wrap">
+                    <table class="water-table">
+                        <thead>
+                            <tr>
+                                <th>Имя</th>
+                                <th>Дискорд</th>
+                                <th>Ранг</th>
+                                <th>Должность</th>
+                                <th>Выговоры</th>
+                                <th>Предупреждения</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Гию Томиока</td>
+                                <td><span class="discord-tag">akishira7</span></td>
+                                <td><span class="rank-pill">Хашира</span></td>
+                                <td>Столп Дыхания Воды</td>
+                                <td><span class="warning-indicator"><span>📝</span> 0/777</span></td>
+                                <td><span class="warning-indicator"><span>⚠️</span> 0/777</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-            <div class="content">
-                <div class="content-panel" id="composition">
-                    <h2 class="panel-title">Старший состав Дыхания Воды</h2>
-                    <p class="panel-subtitle">Полный список старших членов состава.</p>
-                    
+                <!-- Цугуко и Лорные Персонажи -->
+                <h3 style="color:var(--wave-light); margin:40px 0 15px;">Цугуко и Лорные Персонажи</h3>
+                <div class="table-wrap">
+                    <table class="water-table">
+                        <thead>
+                            <tr>
+                                <th>Имя</th>
+                                <th>Дискорд</th>
+                                <th>Ранг</th>
+                                <th>Должность</th>
+                                <th>Выговоры</th>
+                                <th>Предупреждения</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Yuichi Takagi</td>
+                                <td><span class="discord-tag">hazzel6931</span></td>
+                                <td><span class="rank-pill">Пусто</span></td>
+                                <td>Цугуко Дыхания Воды</td>
+                                <td><span class="warning-indicator"><span>📝</span> 0/3</span></td>
+                                <td><span class="warning-indicator"><span>⚠️</span> 0/2</span></td>
+                            </tr>
+                            <tr>
+                                <td class="empty-slot">-</td>
+                                <td class="empty-slot">-</td>
+                                <td><span class="rank-pill">Пусто</span></td>
+                                <td>Цугуко Дыхания Воды</td>
+                                <td><span class="warning-indicator"><span>📝</span> 0/3</span></td>
+                                <td><span class="warning-indicator"><span>⚠️</span> 0/2</span></td>
+                            </tr>
+                            <tr>
+                                <td>Танджиро Камадо</td>
+                                <td><span class="discord-tag">_flower_0</span></td>
+                                <td><span class="rank-pill">Мидзуното</span></td>
+                                <td>Лорный персонаж</td>
+                                <td><span class="warning-indicator"><span>📝</span> 0/3</span></td>
+                                <td><span class="warning-indicator"><span>⚠️</span> 0/2</span></td>
+                            </tr>
+                            <tr>
+                                <td>Мурата</td>
+                                <td><span class="discord-tag">suzu_juzu</span></td>
+                                <td><span class="rank-pill">Киное</span></td>
+                                <td>Лорный персонаж</td>
+                                <td><span class="warning-indicator"><span>📝</span> 0/3</span></td>
+                                <td><span class="warning-indicator"><span>⚠️</span> 0/2</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                    <div class="progress-container">
-                        <div class="progress-label">
-                            <span>Заполненность состава:</span>
-                            <span>37.5%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 37.5%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="slot-section">
-                        <h3 class="slot-title">Столп Воды</h3>
-                        <div class="table-container">
-                            <table class="composition-table">
-                                <thead>
-                                    <tr>
-                                        <th>Имя</th>
-                                        <th>Дискорд</th>
-                                        <th>Ранг</th>
-                                        <th>Должность</th>
-                                        <th>Выговоры</th>
-                                        <th>Предупреждения</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Гию Томиока</td>
-                                        <td><span class="discord-tag">akishira7</span></td>
-                                        <td><span class="rank-badge rank-pillar">Хашира</span></td>
-                                        <td>Столп Дыхания Воды</td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">📝</span>
-                                                <span>0/777</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">⚠️</span>
-                                                <span>0/777</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="slot-section">
-                        <h3 class="slot-title">Цугуко и Лорные Персонажи</h3>
-                        <div class="table-container">
-                            <table class="composition-table">
-                                <thead>
-                                    <tr>
-                                        <th>Имя</th>
-                                        <th>Дискорд</th>
-                                        <th>Ранг</th>
-                                        <th>Должность</th>
-                                        <th>Выговоры</th>
-                                        <th>Предупреждения</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="empty-slot">Yuichi Takagi</td>
-                                        <td class="empty-slot">hazzel6931</td>
-                                        <td><span class="rank-badge rank-tsuguko">Пусто</span></td>
-                                        <td>Цугуко Дыхания Воды</td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">📝</span>
-                                                <span>0/3</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">⚠️</span>
-                                                <span>0/2</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="empty-slot">-</td>
-                                        <td class="empty-slot">-</td>
-                                        <td><span class="rank-badge rank-tsuguko">Пусто</span></td>
-                                        <td>Цугуко Дыхания Воды</td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">📝</span>
-                                                <span>0/3</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">⚠️</span>
-                                                <span>0/2</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="empty-slot">Танджиро Камадо</td>
-                                        <td class="empty-slot">_flower_0</td>
-                                        <td><span class="rank-badge rank-lore">Мидзуното</span></td>
-                                        <td>Лорный персонаж</td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">📝</span>
-                                                <span>0/3</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">⚠️</span>
-                                                <span>0/2</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="empty-slot">Мурата</td>
-                                        <td class="empty-slot">suzu_juzu</td>
-                                        <td><span class="rank-badge rank-lore">Киное</span></td>
-                                        <td>Лорный персонаж</td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">📝</span>
-                                                <span>0/3</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">⚠️</span>
-                                                <span>0/2</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="slot-section">
-                        <h3 class="slot-title">Инструктора</h3>
-                        <div class="table-container">
-                            <table class="composition-table">
-                                <thead>
-                                    <tr>
-                                        <th>Имя</th>
-                                        <th>Дискорд</th>
-                                        <th>Ранг</th>
-                                        <th>Должность</th>
-                                        <th>Выговоры</th>
-                                        <th>Предупреждения</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="empty-slot">-</td>
-                                        <td class="empty-slot">-</td>
-                                        <td><span class="rank-badge rank-instructor">Пусто</span></td>
-                                        <td>Инструктор</td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">📝</span>
-                                                <span>0/3</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">⚠️</span>
-                                                <span>0/2</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="empty-slot">-</td>
-                                        <td class="empty-slot">-</td>
-                                        <td><span class="rank-badge rank-instructor">Пусто</span></td>
-                                        <td>Инструктор</td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">📝</span>
-                                                <span>0/3</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">⚠️</span>
-                                                <span>0/2</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="empty-slot">-</td>
-                                        <td class="empty-slot">-</td>
-                                        <td><span class="rank-badge rank-instructor">Пусто</span></td>
-                                        <td>Инструктор</td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">📝</span>
-                                                <span>0/3</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="warning-indicator">
-                                                <span class="warning-icon">⚠️</span>
-                                                <span>0/2</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <!-- Инструктора -->
+                <h3 style="color:var(--wave-light); margin:40px 0 15px;">Инструктора</h3>
+                <div class="table-wrap">
+                    <table class="water-table">
+                        <thead>
+                            <tr>
+                                <th>Имя</th>
+                                <th>Дискорд</th>
+                                <th>Ранг</th>
+                                <th>Должность</th>
+                                <th>Выговоры</th>
+                                <th>Предупреждения</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="empty-slot">-</td>
+                                <td class="empty-slot">-</td>
+                                <td><span class="rank-pill">Пусто</span></td>
+                                <td>Инструктор</td>
+                                <td><span class="warning-indicator"><span>📝</span> 0/3</span></td>
+                                <td><span class="warning-indicator"><span>⚠️</span> 0/2</span></td>
+                            </tr>
+                            <tr>
+                                <td class="empty-slot">-</td>
+                                <td class="empty-slot">-</td>
+                                <td><span class="rank-pill">Пусто</span></td>
+                                <td>Инструктор</td>
+                                <td><span class="warning-indicator"><span>📝</span> 0/3</span></td>
+                                <td><span class="warning-indicator"><span>⚠️</span> 0/2</span></td>
+                            </tr>
+                            <tr>
+                                <td class="empty-slot">-</td>
+                                <td class="empty-slot">-</td>
+                                <td><span class="rank-pill">Пусто</span></td>
+                                <td>Инструктор</td>
+                                <td><span class="warning-indicator"><span>📝</span> 0/3</span></td>
+                                <td><span class="warning-indicator"><span>⚠️</span> 0/2</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
 
     <script>
         // Навигация
