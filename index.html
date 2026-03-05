@@ -189,58 +189,51 @@
         }
 
         /* карточки для пунктов */
-        .codex-grid {
+        .info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
         }
-        .codex-card {
+        .info-card {
             background: rgba(18, 53, 72, 0.5);
             border-radius: 35px;
             padding: 30px;
             border: 1px solid var(--glass-border);
             transition: 0.2s;
-            position: relative;
-            overflow: hidden;
         }
-        .codex-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(109,179,212,0.1), transparent);
-            transition: left 0.5s;
-        }
-        .codex-card:hover::before {
-            left: 100%;
-        }
-        .codex-card:hover {
+        .info-card:hover {
             border-color: var(--wave-light);
-            transform: translateY(-3px);
         }
-        .card-num {
-            display: inline-block;
-            background: var(--deep-teal);
-            color: var(--midnight);
-            font-weight: 800;
-            padding: 5px 16px;
-            border-radius: 50px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-        }
-        .card-head {
+        .info-card h3 {
             font-size: 1.6rem;
-            font-weight: 700;
-            font-family: var(--font-display);
-            color: var(--seafoam);
-            margin-bottom: 10px;
+            color: var(--wave-light);
+            margin-bottom: 20px;
+            border-bottom: 1px dashed var(--glass-border);
+            padding-bottom: 10px;
         }
-        .card-text {
-            color: rgba(255,255,255,0.8);
-            font-size: 0.95rem;
-            line-height: 1.6;
+        .info-list {
+            list-style: none;
+        }
+        .info-list li {
+            margin: 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dotted rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+        .info-list li span:last-child {
+            color: var(--coral);
+            font-weight: 600;
+        }
+        .info-note {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--coral);
+            background: rgba(0,0,0,0.2);
+            padding: 12px;
+            border-radius: 20px;
+            text-align: center;
         }
 
         /* для иерархии */
@@ -457,7 +450,14 @@
             width: 37.5%;
         }
 
-        /* селектор рангов */
+        /* селектор рангов и промо-блок */
+        .rank-selector {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
         #rankSelect {
             background: var(--abyss);
             color: white;
@@ -465,6 +465,77 @@
             border-radius: 60px;
             padding: 12px 25px;
             font-size: 1rem;
+            min-width: 250px;
+        }
+        .promo-block {
+            background: rgba(0,0,0,0.3);
+            border-radius: 30px;
+            padding: 30px;
+        }
+        .promo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .promo-title {
+            font-size: 2rem;
+            color: var(--wave-light);
+        }
+        .promo-sub {
+            color: var(--coral);
+            font-size: 1.1rem;
+        }
+        .promo-cooldown {
+            background: rgba(29, 91, 122, 0.3);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid var(--wave-light);
+        }
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+        .requirement-cat {
+            background: rgba(10, 35, 55, 0.5);
+            border-radius: 25px;
+            padding: 25px;
+            border: 1px solid var(--glass-border);
+        }
+        .requirement-cat h4 {
+            font-size: 1.3rem;
+            color: var(--wave-light);
+            margin-bottom: 15px;
+            border-bottom: 1px dashed;
+            padding-bottom: 8px;
+        }
+        .requirement-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dotted rgba(255,255,255,0.1);
+        }
+        .requirement-item:last-child {
+            border-bottom: none;
+        }
+        .requirement-name {
+            color: var(--seafoam);
+        }
+        .requirement-value {
+            color: var(--coral);
+            font-weight: 600;
+        }
+        .promo-note {
+            margin-top: 25px;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 20px;
+            text-align: center;
+            color: var(--coral);
         }
 
         /* адаптив */
@@ -500,6 +571,7 @@
                 z-index: 1001; 
             }
             .hero-title { font-size: 3.5rem; }
+            .promo-header { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
@@ -646,50 +718,169 @@
             </div>
         </section>
 
-        <!-- СИСТЕМА ПОВЫШЕНИЯ -->
+        <!-- СИСТЕМА ПОВЫШЕНИЯ (ПОЛНАЯ ВЕРСИЯ КАК НА СКРИНАХ) -->
         <section id="ranks-section" class="page-section">
             <div class="hero">
                 <h1 class="hero-title">СИСТЕМА ПОВЫШЕНИЯ</h1>
                 <p class="hero-sub">10 ступеней развития истребителя · От Сейто до Киноэ</p>
             </div>
 
-            <!-- Общая информация -->
+            <!-- Общая информация (как на первом скрине) -->
             <div class="vault">
                 <h2 class="vault-title"><i class="fas fa-info-circle"></i> Общая информация</h2>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:25px;">
-                    <div class="codex-card"><h3 style="color:var(--wave-light);">Отчетность</h3><div>• Отчеты в Discord канал #Отчеты</div><div>• Подробное описание</div><div>• Скриншоты</div></div>
-                    <div class="codex-card"><h3 style="color:var(--wave-light);">Лимиты</h3><div>• Убийство демона: 5 за ранг</div><div>• Сразить истребителя: 3 за ранг</div><div>• Сдача устава: 1 за ранг</div></div>
-                    <div class="codex-card"><h3 style="color:var(--wave-light);">Обязательно</h3><div>• Проявление цвета катаны</div><div>• Испытания с панкунами</div><div>• Спарринги со столпами</div></div>
+                <p style="margin-bottom:30px;">Основные принципы системы повышения и отчетности</p>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>Отчетность</h3>
+                        <ul class="info-list">
+                            <li>Отчеты в Discord канал</li>
+                            <li>Канал: #Отчеты</li>
+                            <li>Подробное описание выполнения</li>
+                            <li>Скриншоты по необходимости</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>Лимиты</h3>
+                        <ul class="info-list">
+                            <li><span>Убийство демона</span> <span>лимит 5 за ранг</span></li>
+                            <li><span>Сразить истребителя</span> <span>лимит 3 за ранг</span></li>
+                            <li><span>Сдача устава</span> <span>лимит 1 за ранг</span></li>
+                            <li><span>Захват точек</span> <span>ограничения по рангам</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>Обязательные требования</h3>
+                        <ul class="info-list">
+                            <li>Проявление цвета катаны</li>
+                            <li>Испытания с панкунами</li>
+                            <li>Спарринги со столпами</li>
+                            <li>РП отыгровки</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
-            <!-- Система баллов -->
+            <!-- Система баллов (как на втором скрине) -->
             <div class="vault">
                 <h2 class="vault-title"><i class="fas fa-star"></i> Система баллов</h2>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:25px;">
-                    <div class="codex-card"><h3>Младший Состав</h3><div>Тренировка: 4</div><div>Поручение столпа: 4</div><div>Поручение инструктора: 3</div><div>Ивент: 3</div><div>Сдача устава: 2</div><div>Захват точки: 1</div><div>Убийство демона: 1</div></div>
-                    <div class="codex-card"><h3>Средний Состав</h3><div>Тренировка: 4</div><div>Поручение столпа: 4</div><div>Захват точки: 1</div><div>Убийство демона: 1</div><div>Сразить истребителя: 1-2</div></div>
-                    <div class="codex-card"><h3>Высший Состав</h3><div>Тренировка: 4</div><div>Сбор строя: 4</div><div>Поручение столпа: 4</div><div>Захват точки: 1</div><div>Убийство демона: 1</div></div>
+                <p style="margin-bottom:30px;">Подробное описание начисления баллов за различные активности</p>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>Младший Состав</h3>
+                        <ul class="info-list">
+                            <li><span>Участие в тренировке</span> <span>4 балла</span></li>
+                            <li><span>Поручение от столпа воды</span> <span>4 балла</span></li>
+                            <li><span>Поручение от инструктора</span> <span>3 балла</span></li>
+                            <li><span>Участие в ивенте</span> <span>3 балла</span></li>
+                            <li><span>Сдача знания на устав</span> <span>2 балла</span></li>
+                            <li><span>Захват точки</span> <span>1 балл</span></li>
+                            <li><span>Убийство демона</span> <span>1 балл</span></li>
+                            <li><span>Сразить истребителя на гальке</span> <span>1 балл</span></li>
+                        </ul>
+                        <div class="info-note">Лимиты: убийство демона - 5 за ранг, сразить истребителя - 3 за ранг, сдача устава - 1 за ранг</div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>Средний Состав</h3>
+                        <ul class="info-list">
+                            <li><span>Участие в тренировке</span> <span>4 балла</span></li>
+                            <li><span>Поручение от столпа воды</span> <span>4 балла</span></li>
+                            <li><span>Поручение от инструктора</span> <span>3 балла</span></li>
+                            <li><span>Участие в ивенте</span> <span>3 балла</span></li>
+                            <li><span>Захват точки</span> <span>1 балл</span></li>
+                            <li><span>Убийство демона</span> <span>1 балл</span></li>
+                            <li><span>Сразить истребителя на гальке</span> <span>1-2 балла</span></li>
+                        </ul>
+                        <div class="info-note">Лимиты: захват точки, убийство демона, сразить истребителя - ⅓ от баллов на ранг</div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>Высший Состав</h3>
+                        <ul class="info-list">
+                            <li><span>Участие в тренировке</span> <span>4 балла</span></li>
+                            <li><span>Сбор строя для активности</span> <span>4 балла</span></li>
+                            <li><span>Поручение от столпа воды</span> <span>4 балла</span></li>
+                            <li><span>Поручение от инструктора</span> <span>3 балла</span></li>
+                            <li><span>Участие в ивенте</span> <span>3 балла</span></li>
+                            <li><span>Захват точки</span> <span>1 балл</span></li>
+                            <li><span>Убийство демона</span> <span>1 балл</span></li>
+                            <li><span>Сразить истребителя на гальке</span> <span>1-2 балла</span></li>
+                        </ul>
+                        <div class="info-note">Лимиты: захват точки, убийство демона, сразить истребителя - ¼ от баллов на ранг</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Переход на следующий ранг -->
+            <!-- Переход на следующий ранг (как на третьем скрине) -->
             <div class="vault">
                 <h2 class="vault-title"><i class="fas fa-arrow-up"></i> Переход на следующий ранг</h2>
-                <div style="display:flex; gap:20px; align-items:center; flex-wrap:wrap; margin-bottom:30px;">
+                <p style="margin-bottom:30px;">Выберите ваш текущий ранг, чтобы увидеть требования для перехода на следующий уровень</p>
+                
+                <div class="rank-selector">
                     <span style="font-size:1.3rem;">Ваш текущий ранг:</span>
                     <select id="rankSelect">
-                        <option value="seito">Сейто</option><option value="mizunoto">Мидзуното</option><option value="mizunoe">Мидзуноэ</option><option value="kanoto">Каното</option><option value="kanoe">Каноэ</option><option value="tsuchinoto">Цутиното</option><option value="tsuchinoe">Цутиноэ</option><option value="hinoto">Хиното</option><option value="hinoe">Хиноэ</option><option value="kinoto">Киното</option>
+                        <option value="seito">Сейто</option>
+                        <option value="mizunoto" selected>Мидзуното</option>
+                        <option value="mizunoe">Мидзуноэ</option>
+                        <option value="kanoto">Каното</option>
+                        <option value="kanoe">Каноэ</option>
+                        <option value="tsuchinoto">Цутиното</option>
+                        <option value="tsuchinoe">Цутиноэ</option>
+                        <option value="hinoto">Хиното</option>
+                        <option value="hinoe">Хиноэ</option>
+                        <option value="kinoto">Киното</option>
                     </select>
                 </div>
-                <div style="background:rgba(0,0,0,0.3); border-radius:30px; padding:30px;">
-                    <h3 id="promoText" style="color:var(--wave-light);">Переход с Мидзуното на Мидзуноэ</h3>
-                    <p id="promoDesc" style="color:var(--coral);">Требуется: 10 баллов, лопнуть маленький панкун, минимум одна тренировка</p>
+
+                <div class="promo-block" id="promoBlock">
+                    <div class="promo-header">
+                        <div>
+                            <h3 class="promo-title" id="promoTitle">Переход с Мидзуното на Мидзуноэ</h3>
+                            <p class="promo-sub" id="promoDesc">Начальный уровень в иерархии истребителей</p>
+                        </div>
+                        <div class="promo-cooldown">
+                            <span>Время повышения: <strong id="promoCooldown">⏳ 1 день КД</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="requirements-grid">
+                        <div class="requirement-cat">
+                            <h4>Основные требования</h4>
+                            <div class="requirement-item">
+                                <span class="requirement-name">Необходимо баллов</span>
+                                <span class="requirement-value" id="reqPoints">8 баллов</span>
+                            </div>
+                            <div class="requirement-item">
+                                <span class="requirement-name">Прохождение фин. отбора</span>
+                                <span class="requirement-value">Обязательно</span>
+                            </div>
+                        </div>
+
+                        <div class="requirement-cat">
+                            <h4>Система баллов</h4>
+                            <div class="requirement-item"><span>Участие в тренировке</span><span>4 балла</span></div>
+                            <div class="requirement-item"><span>Поручение от столпа воды</span><span>4 балла</span></div>
+                            <div class="requirement-item"><span>Поручение от инструктора</span><span>3 балла</span></div>
+                            <div class="requirement-item"><span>Участие в ивенте</span><span>3 балла</span></div>
+                            <div class="requirement-item"><span>Сдача знания на устав</span><span>2 балла</span></div>
+                            <div class="requirement-item"><span>Захват точки</span><span>1 балл</span></div>
+                            <div class="requirement-item"><span>Убийство демона</span><span>1 балл</span></div>
+                            <div class="requirement-item"><span>Сразить истребителя на гальке</span><span>1 балл</span></div>
+                        </div>
+                    </div>
+
+                    <div class="promo-note">
+                        💡 Для зачета баллов необходимо отправить подробный отчет в канал #Отчеты в Discord с описанием выполненного действия
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- КОДЕКС ДЫХАНИЯ (ПОЛНАЯ ВЕРСИЯ ИЗ СООБЩЕНИЯ) -->
+        <!-- КОДЕКС ДЫХАНИЯ (ПОЛНАЯ ВЕРСИЯ) -->
         <section id="codex-section" class="page-section">
             <div class="hero">
                 <h1 class="hero-title">КОДЕКС ВОДЫ</h1>
@@ -701,26 +892,26 @@
                 <h2 class="vault-title"><i class="fas fa-scroll"></i> Кодекс Состава</h2>
                 <p style="margin-bottom:30px; font-size:1.2rem;">Соблюдение данного кодекса - один из шагов к становлению сильным мечником</p>
                 
-                <div class="codex-grid">
-                    <div class="codex-card"><span class="card-num">1</span><div class="card-head">Уважай других!</div><div class="card-text">Это основа каждого бойца.</div></div>
-                    <div class="codex-card"><span class="card-num">2</span><div class="card-head">Решение проблем</div><div class="card-text">Для решения проблем делай то что нужно, всегда можно пойти на жертвы ради большего.</div></div>
-                    <div class="codex-card"><span class="card-num">3</span><div class="card-head">Контроль эмоций</div><div class="card-text">Не подавай виду эмоциям во время боя. Неважно что у тебя на душе, страх, злость, горе, боль или тому подобное. Когда эмоции берут верх - мышление притупляется.</div></div>
-                    <div class="codex-card"><span class="card-num">4</span><div class="card-head">Поиск решений</div><div class="card-text">Оказавшись в трудной ситуации, всегда ищи способ выбраться из неё. Также, как вода ищет куда просочиться.</div></div>
-                    <div class="codex-card"><span class="card-num">5</span><div class="card-head">Дыхание</div><div class="card-text">Не подводи своё дыхание, иначе ты подведёшь всех своих товарищей.</div></div>
-                    <div class="codex-card"><span class="card-num">6</span><div class="card-head">Честность</div><div class="card-text">Никогда не говори гадостей за спинами своих товарищей.</div></div>
-                    <div class="codex-card"><span class="card-num">7</span><div class="card-head">Целеустремленность</div><div class="card-text">Имей цель, без этого прогресса не будет.</div></div>
+                <div class="info-grid">
+                    <div class="info-card"><span class="card-num">1</span><h3>Уважай других!</h3><p>Это основа каждого бойца.</p></div>
+                    <div class="info-card"><span class="card-num">2</span><h3>Решение проблем</h3><p>Для решения проблем делай то что нужно, всегда можно пойти на жертвы ради большего.</p></div>
+                    <div class="info-card"><span class="card-num">3</span><h3>Контроль эмоций</h3><p>Не подавай виду эмоциям во время боя. Неважно что у тебя на душе, страх, злость, горе, боль или тому подобное. Когда эмоции берут верх - мышление притупляется.</p></div>
+                    <div class="info-card"><span class="card-num">4</span><h3>Поиск решений</h3><p>Оказавшись в трудной ситуации, всегда ищи способ выбраться из неё. Также, как вода ищет куда просочиться.</p></div>
+                    <div class="info-card"><span class="card-num">5</span><h3>Дыхание</h3><p>Не подводи своё дыхание, иначе ты подведёшь всех своих товарищей.</p></div>
+                    <div class="info-card"><span class="card-num">6</span><h3>Честность</h3><p>Никогда не говори гадостей за спинами своих товарищей.</p></div>
+                    <div class="info-card"><span class="card-num">7</span><h3>Целеустремленность</h3><p>Имей цель, без этого прогресса не будет.</p></div>
                 </div>
 
                 <h3 style="color:var(--wave-light); margin:40px 0 20px; font-size:2rem;">Три важных принципа</h3>
-                <div class="codex-grid" style="grid-template-columns:repeat(3,1fr);">
-                    <div class="codex-card"><div class="card-text">Боевой товарищ всегда лучше, чем самая лучшая катана.</div></div>
-                    <div class="codex-card"><div class="card-text">Нарушение кодекса порицается, но не ведёт к ограничениям.</div></div>
-                    <div class="codex-card"><div class="card-text">Кодекс нужен людям, чтобы помогать другим людям.</div></div>
+                <div class="info-grid" style="grid-template-columns:repeat(3,1fr);">
+                    <div class="info-card"><p>Боевой товарищ всегда лучше, чем самая лучшая катана.</p></div>
+                    <div class="info-card"><p>Нарушение кодекса порицается, но не ведёт к ограничениям.</p></div>
+                    <div class="info-card"><p>Кодекс нужен людям, чтобы помогать другим людям.</p></div>
                 </div>
 
-                <div class="codex-card" style="margin-top:25px;">
-                    <span class="card-num">Дресс-код</span>
-                    <div class="card-text">Отсутствует</div>
+                <div class="info-card" style="margin-top:25px;">
+                    <h3>Дресс-код</h3>
+                    <p>Отсутствует</p>
                 </div>
             </div>
 
@@ -882,7 +1073,7 @@
             </div>
         </section>
 
-        <!-- СОСТАВ ДЫХАНИЯ (ваша полная версия) -->
+        <!-- СОСТАВ ДЫХАНИЯ -->
         <section id="staff-section" class="page-section">
             <div class="hero">
                 <h1 class="hero-title">СОСТАВ ВОДЫ</h1>
@@ -1047,27 +1238,116 @@
             window.scrollTo({top:0, behavior:'smooth'});
         }
 
-        // Данные рангов
+        // Данные рангов для промо-блока
         const rankData = {
-            seito: { current:"Сейто", next:"Мидзуното", points:0, requirements:["Прохождение фин. отбора"] },
-            mizunoto: { current:"Мидзуното", next:"Мидзуноэ", points:8, requirements:["Получение личной катаны и проявление ее цвета [5 рп действий]"] },
-            mizunoe: { current:"Мидзуноэ", next:"Каното", points:10, requirements:["Лопнуть маленький панкун","Минимум одна тренировка"] },
-            kanoto: { current:"Каното", next:"Каноэ", points:12, requirements:["Лопнуть средний панкун","Выполнить поручение"] },
-            kanoe: { current:"Каноэ", next:"Цутиното", points:31, requirements:["Сразиться с инструктором/столпом","Захват точки"] },
-            tsuchinoto: { current:"Цутиното", next:"Цутиноэ", points:24, requirements:["Поручение от столпа","2 ивента"] },
-            tsuchinoe: { current:"Цутиноэ", next:"Хиното", points:27, requirements:["Спарринг со столпом","Захват точки"] },
-            hinoto: { current:"Хиното", next:"Хиноэ", points:30, requirements:["Большой панкун","Осмотр катаны (15 рп)"] },
-            hinoe: { current:"Хиноэ", next:"Киното", points:40, requirements:["Спарринг со столпом","3 ивента","2 захвата"] },
-            kinoto: { current:"Киното", next:"Киноэ", points:48, requirements:["1 поручение столпа + 2 от цугуко","Постоянная концентрация (15 рп)","Рекомендация столпа"] }
+            seito: {
+                title: "Переход с Сейто на Мидзуното",
+                desc: "Начальный уровень в иерархии истребителей",
+                cooldown: "0 день КД",
+                points: "0 баллов (Достигнут)",
+                requirements: ["Прохождение фин. отбора"]
+            },
+            mizunoto: {
+                title: "Переход с Мидзуното на Мидзуноэ",
+                desc: "Начальный уровень в иерархии истребителей",
+                cooldown: "1 день КД",
+                points: "8 баллов",
+                requirements: ["Получение личной катаны и проявление ее цвета [5 рп действий]"]
+            },
+            mizunoe: {
+                title: "Переход с Мидзуноэ на Каното",
+                desc: "Второй уровень в иерархии истребителей",
+                cooldown: "1 день КД",
+                points: "10 баллов",
+                requirements: ["Лопнуть маленький панкун в поместье бабочки", "Минимум одна тренировка"]
+            },
+            kanoto: {
+                title: "Переход с Каното на Каноэ",
+                desc: "Третий уровень в иерархии истребителей",
+                cooldown: "1 день КД",
+                points: "12 баллов",
+                requirements: ["Лопнуть средний панкун в поместье бабочки", "Выполнить минимум одно любое поручение"]
+            },
+            kanoe: {
+                title: "Переход с Каноэ на Цутиното",
+                desc: "Четвертый уровень в иерархии истребителей",
+                cooldown: "2 дня КД",
+                points: "31 балл",
+                requirements: ["Доказать, что вы стали сильнее и сразиться против инструктора / столпа [оставить меньше 50%/70% хп]", "Поучаствовать в захвате важной точки минимум 1 раз"]
+            },
+            tsuchinoto: {
+                title: "Переход с Цутиното на Цутиноэ",
+                desc: "Пятый уровень в иерархии истребителей",
+                cooldown: "2 дня КД",
+                points: "24 балла",
+                requirements: ["Выполнить минимум 1 личное поручение от столпа", "Побывать минимум на 2 ивентах / мероприятиях"]
+            },
+            tsuchinoe: {
+                title: "Переход с Цутиноэ на Хиното",
+                desc: "Шестой уровень в иерархии истребителей",
+                cooldown: "2 дня КД",
+                points: "27 баллов",
+                requirements: ["Провести спарринг со столпом воды и получить от него одобрение", "Поучаствовать в захвате важной точки минимум 1 раз"]
+            },
+            hinoto: {
+                title: "Переход с Хиното на Хиноэ",
+                desc: "Седьмой уровень в иерархии истребителей",
+                cooldown: "2 дня КД",
+                points: "30 баллов",
+                requirements: ["Лопнуть большой панкун в поместье бабочки", "Провести осмотр катаны и ее починку в случае поломки [отыграть проверку прочности через roll, починку ее кузнецом через do. Минимум 15 рп действий]"]
+            },
+            hinoe: {
+                title: "Переход с Хиноэ на Киното",
+                desc: "Восьмой уровень в иерархии истребителей",
+                cooldown: "3 дня КД",
+                points: "40 баллов",
+                requirements: ["Провести спарринг со столпом воды и получить от него одобрение", "Побывать минимум на 3 ивентах / мероприятиях", "Поучаствовать в захвате важной точке минимум 2 раза"]
+            },
+            kinoto: {
+                title: "Переход с Киното на Киноэ",
+                desc: "Девятый уровень в иерархии истребителей",
+                cooldown: "3 дня КД",
+                points: "48 баллов",
+                requirements: ["Выполнить минимум 1 поручение от столпа воды и 2 поручения от Цугуко / Инструктора", "Постигнуть технику постоянной концентрации дыхания (минимум 15 рп отыгровок)", "Получить рекомендацию от любого столпа"]
+            }
         };
 
-        const sel = document.getElementById('rankSelect');
-        if(sel) {
-            sel.addEventListener('change', function() {
-                const d = rankData[this.value];
-                document.getElementById('promoText').innerText = d ? `Переход с ${d.current} на ${d.next}` : 'Выберите ранг';
-                document.getElementById('promoDesc').innerHTML = d ? `Требуется: ${d.points} баллов, ${d.requirements.join(', ')}` : '';
+        const rankSelect = document.getElementById('rankSelect');
+        const promoTitle = document.getElementById('promoTitle');
+        const promoDesc = document.getElementById('promoDesc');
+        const promoCooldown = document.getElementById('promoCooldown');
+        const reqPoints = document.getElementById('reqPoints');
+        const requirementsCat = document.querySelector('.requirement-cat:first-child');
+
+        function updatePromo(rankKey) {
+            const data = rankData[rankKey];
+            if (!data) return;
+            
+            promoTitle.textContent = data.title;
+            promoDesc.textContent = data.desc;
+            promoCooldown.innerHTML = `⏳ ${data.cooldown}`;
+            reqPoints.textContent = data.points;
+            
+            // Обновляем требования
+            const reqItems = requirementsCat.querySelectorAll('.requirement-item');
+            // Удаляем все кроме первого (Необходимо баллов)
+            for (let i = reqItems.length - 1; i > 0; i--) {
+                reqItems[i].remove();
+            }
+            
+            // Добавляем новые требования
+            data.requirements.forEach(req => {
+                const newReq = document.createElement('div');
+                newReq.className = 'requirement-item';
+                newReq.innerHTML = `<span class="requirement-name">${req}</span><span class="requirement-value">Обязательно</span>`;
+                requirementsCat.appendChild(newReq);
             });
+        }
+
+        if (rankSelect) {
+            rankSelect.addEventListener('change', (e) => updatePromo(e.target.value));
+            // Инициализация для выбранного по умолчанию (Мидзуното)
+            updatePromo('mizunoto');
         }
     </script>
 </body>
